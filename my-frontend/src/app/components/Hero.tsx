@@ -214,7 +214,7 @@ const Hero = () => {
             {/* Main Health Image - Black Woman Healthcare Professional */}
             <div className="relative glass-card p-6 soft-hover">
               <Image 
-                src="/Screenshot from 2025-06-20 18-48-57.png" 
+                src="/front-view-doctor-holding-anatomic-model.jpg" 
                 alt="Healthcare professional with medical technology" 
                 width={600}
                 height={320}
@@ -256,7 +256,7 @@ const Hero = () => {
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="glass-card p-3 soft-hover">
                 <Image 
-                  src="/women-s-health-women-s-healthcare-concept-with-uterus.png" 
+                  src="/women-s-health-women-s-healthcare-concept-with-uterus.jpg" 
                   alt="Women's healthcare concept with medical illustration" 
                   width={200}
                   height={96}
@@ -271,7 +271,7 @@ const Hero = () => {
               
               <div className="glass-card p-3 soft-hover">
                 <Image 
-                  src="/front-view-doctor-holding-anatomic-model.jpg" 
+                  src="/reproductive-system-stethoscope-flat-lay.jpg" 
                   alt="Doctor with anatomical model for medical education" 
                   width={200}
                   height={96}
