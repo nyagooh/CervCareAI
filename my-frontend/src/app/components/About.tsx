@@ -80,7 +80,7 @@ const About = () => {
             <div className="glass-card p-6 soft-hover">
               <div className="relative mb-6 group">
                 <img 
-                  src="https://images.pexels.com/photos/8376277/pexels-photo-8376277.jpeg?auto=compress&cs=tinysrgb&w=600" 
+                  src="/reproductive-system-stethoscope-flat-lay.jpg" 
                   alt="AI-powered medical technology for women's health" 
                   className="w-full h-64 object-cover rounded-2xl"
                 />
@@ -177,7 +177,7 @@ const About = () => {
             
             <button className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2 mx-auto">
               <Stethoscope className="w-5 h-5 group-hover:animate-pulse" />
-              Start Your Health Journey
+              Start Your Assessment Journey
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
