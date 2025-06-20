@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Heart, ArrowRight, Sparkles, Shield, Play, Users, BarChart3, Stethoscope, Activity, Brain, Zap } from 'lucide-react';
 
 const Hero = () => {
@@ -212,10 +213,13 @@ const Hero = () => {
           <div className="relative">
             {/* Main Health Image - Black Woman Healthcare Professional */}
             <div className="relative glass-card p-6 soft-hover">
-              <img 
-                src="https://images.pexels.com/photos/6303773/pexels-photo-6303773.jpeg?auto=compress&cs=tinysrgb&w=600" 
-                alt="Black female healthcare professional" 
+              <Image 
+                src="/Screenshot from 2025-06-20 18-48-57.png" 
+                alt="Healthcare professional with medical technology" 
+                width={600}
+                height={320}
                 className="w-full h-80 object-cover rounded-2xl"
+                priority
               />
               
               {/* Floating AI Prediction Card */}
@@ -248,29 +252,33 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Secondary Health Images - Black Women */}
+            {/* Secondary Health Images - Women's Healthcare */}
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="glass-card p-3 soft-hover">
-                <img 
-                  src="https://images.pexels.com/photos/5452268/pexels-photo-5452268.jpeg?auto=compress&cs=tinysrgb&w=300" 
-                  alt="Black woman medical consultation" 
+                <Image 
+                  src="/women-s-health-women-s-healthcare-concept-with-uterus.png" 
+                  alt="Women's healthcare concept with medical illustration" 
+                  width={200}
+                  height={96}
                   className="w-full h-24 object-cover rounded-xl"
                 />
                 <div className="mt-2 text-center">
-                  <div className="text-xs font-medium text-gray-700">Expert Consultation</div>
+                  <div className="text-xs font-medium text-gray-700">Women's Health Focus</div>
                 </div>
                 {/* Mini neural nodes */}
                 <div className="absolute top-2 right-2 w-1 h-1 bg-pink-400 rounded-full animate-pulse"></div>
               </div>
               
               <div className="glass-card p-3 soft-hover">
-                <img 
-                  src="https://images.pexels.com/photos/5327656/pexels-photo-5327656.jpeg?auto=compress&cs=tinysrgb&w=300" 
-                  alt="Black woman with medical technology" 
+                <Image 
+                  src="/front-view-doctor-holding-anatomic-model.jpg" 
+                  alt="Doctor with anatomical model for medical education" 
+                  width={200}
+                  height={96}
                   className="w-full h-24 object-cover rounded-xl"
                 />
                 <div className="mt-2 text-center">
-                  <div className="text-xs font-medium text-gray-700">AI Technology</div>
+                  <div className="text-xs font-medium text-gray-700">Medical Education</div>
                 </div>
                 {/* Mini neural nodes */}
                 <div className="absolute top-2 right-2 w-1 h-1 bg-purple-400 rounded-full animate-pulse" style={{ animationDelay: '0.7s' }}></div>
