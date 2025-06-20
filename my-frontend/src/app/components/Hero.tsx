@@ -128,7 +128,7 @@ const Hero = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/60 backdrop-blur-xl border border-pink-200/50 rounded-full px-4 py-2 mb-6 soft-shadow">
               <Sparkles className="w-4 h-4 text-pink-400" />
-              <span className="text-sm font-medium text-pink-600">Code Her Care Hackathon Winner</span>
+              <span className="text-sm font-medium text-pink-600">Code Her care</span>
             </div>
 
             {/* Main Headline */}
@@ -171,7 +171,7 @@ const Hero = () => {
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
               <button className="group px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center justify-center gap-2 soft-button">
                 <Stethoscope className="w-4 h-4 group-hover:animate-pulse" />
-                Explore the Vision
+                Start Assessment
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
               
@@ -303,7 +303,7 @@ const Hero = () => {
             <Brain className="w-4 h-4 text-cyan-400 brain-pulse" />
             <span className="text-sm text-gray-700 font-medium">AI-Powered</span>
           </div>
-          <div className="text-xs text-gray-500">Neural Analysis</div>
+          <div className="text-xs text-gray-500">Cervical cancer Analysis</div>
         </div>
       </div>
 
