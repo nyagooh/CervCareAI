@@ -115,6 +115,48 @@ const HowItWorks = () => {
           </p>
         </div>
 
+        {/* Steps Process */}
+        <div className="relative mb-16">
+          {/* Connection Line */}
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-200 via-purple-200 to-cyan-200 transform -translate-y-1/2 z-0"></div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+            {steps.map((step, index) => (
+              <div 
+                key={index}
+                className={`glass-card p-6 text-center soft-hover border ${step.borderColor}/30 relative group`}
+                style={{ animationDelay: `${index * 0.2}s` }}
+              >
+                {/* Step Number */}
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                  {index + 1}
+                </div>
+                
+                {/* Icon */}
+                <div className={`w-16 h-16 ${step.bgColor} rounded-2xl flex items-center justify-center mx-auto mb-6 border ${step.borderColor}/50 group-hover:${step.glowColor} transition-all duration-300`}>
+                  <step.icon className={`w-8 h-8 ${step.color}`} />
+                </div>
+
+                {/* Content */}
+                <h3 className={`text-lg font-bold ${step.color} mb-3`}>
+                  {step.title}
+                </h3>
+                
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {step.description}
+                </p>
+
+                {/* Connection Arrow */}
+                {index < steps.length - 1 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20">
+                    <ArrowRight className="w-6 h-6 text-pink-300 animate-pulse" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
     </section>
   );
 };
