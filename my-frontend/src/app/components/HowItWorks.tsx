@@ -181,6 +181,80 @@ const HowItWorks = () => {
           </div>
         </div>
 
+        {/* Healthcare Professional Image */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+          <div>
+            <h3 className="text-3xl font-bold gradient-text mb-6">
+              Trusted by Healthcare Professionals
+            </h3>
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              Our AI system is developed in collaboration with gynecologists, oncologists, 
+              and women's health experts to ensure the highest standards of care and accuracy.
+            </p>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="text-gray-700">Evidence-based medical guidelines</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="text-gray-700">Continuous learning from latest research</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+                <span className="text-gray-700">Privacy-first approach to your data</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass-card p-6 soft-hover">
+            <img 
+              src="https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=600" 
+              alt="Healthcare professional discussing cervical health" 
+              className="w-full h-80 object-cover rounded-2xl"
+            />
+            
+            {/* Floating Care Indicators */}
+            <div className="absolute top-8 right-8 glass-card-light p-3 rounded-xl">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium text-gray-700">Expert Care</span>
+              </div>
+            </div>
+            
+            <div className="absolute bottom-8 left-8 glass-card-light p-3 rounded-xl">
+              <div className="flex items-center gap-2">
+                <Heart className="w-4 h-4 text-pink-400 gentle-heartbeat" />
+                <span className="text-sm font-medium text-gray-700">Compassionate Support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center">
+          <div className="glass-card p-8 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold gradient-text mb-4">
+              Ready to Take the First Step?
+            </h3>
+            
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              Join thousands of women who have taken control of their cervical health 
+              with our gentle, AI-powered assessment.
+            </p>
+            
+            <button className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2 mx-auto">
+              <Heart className="w-5 h-5 group-hover:animate-pulse" />
+              Begin Your Health Journey
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+            
+            <p className="text-xs text-gray-500 mt-4">
+              ✨ Free assessment • 5 minutes • Completely confidential
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );
