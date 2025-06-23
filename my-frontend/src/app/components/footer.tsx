@@ -21,8 +21,8 @@ const Footer = () => {
         { name: 'Cookie Policy', href: '#cookies' }
       ];
       return (
-        <footer className="relative bg-gradient-to-r from-pink-500 to-purple-600">
-          <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
+        <footer className="relative bg-pink-600">
+          <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Brand Section */}
               <div className="lg:col-span-2">
