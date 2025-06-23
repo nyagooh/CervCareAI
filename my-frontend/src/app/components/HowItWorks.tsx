@@ -95,7 +95,26 @@ const HowItWorks = () => {
           <Sparkles className="w-3 h-3 text-white" />
         </div>
       </div>
-     
+      <div className="max-w-6xl mx-auto relative z-10">
+        
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 glass-card-light px-6 py-3 mb-8">
+            <Heart className="w-5 h-5 text-pink-400 gentle-heartbeat" />
+            <span className="text-sm font-semibold text-pink-600 tracking-wide">YOUR HEALTH JOURNEY</span>
+          </div>
+          
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            <span className="block text-gray-800">How We Support</span>
+            <span className="block gradient-text">Your Cervical Health</span>
+          </h2>
+          
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Our gentle, step-by-step process combines advanced AI technology with compassionate care 
+            to help you understand and protect your cervical health with confidence and peace of mind.
+          </p>
+        </div>
+
     </section>
   );
 };
