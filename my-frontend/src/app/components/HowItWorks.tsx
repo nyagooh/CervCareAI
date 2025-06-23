@@ -79,6 +79,25 @@ const HowItWorks = () => {
     }
   ];
 
+  return (
+    <section id="how-it-works" className="py-20 px-6 relative bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50">
+      {/* Soft Background Pattern */}
+      <div className="absolute inset-0 opacity-5 soft-grid"></div>
+      
+      {/* Floating Health Elements */}
+      <div className="absolute top-20 left-10 hidden lg:block">
+        <div className="w-8 h-8 bg-gradient-to-r from-pink-300 to-rose-300 rounded-full opacity-30 gentle-float flex items-center justify-center">
+          <Heart className="w-4 h-4 text-white" />
+        </div>
+      </div>
+      <div className="absolute bottom-20 right-10 hidden lg:block">
+        <div className="w-6 h-6 bg-gradient-to-r from-purple-300 to-pink-300 rounded-full opacity-30 gentle-float flex items-center justify-center" style={{ animationDelay: '-1s' }}>
+          <Sparkles className="w-3 h-3 text-white" />
+        </div>
+      </div>
+     
+    </section>
+  );
 };
 
 export default HowItWorks;
