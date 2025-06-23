@@ -61,6 +61,24 @@ const HowItWorks = () => {
     }
   ];
 
+  const benefits = [
+    {
+      icon: Shield,
+      title: 'Early Detection',
+      description: 'Identify potential risks before symptoms appear'
+    },
+    {
+      icon: Users,
+      title: 'Expert Support',
+      description: 'Connect with healthcare professionals who care'
+    },
+    {
+      icon: Calendar,
+      title: 'Ongoing Care',
+      description: 'Regular check-ins and health monitoring'
+    }
+  ];
+
 };
 
 export default HowItWorks;
