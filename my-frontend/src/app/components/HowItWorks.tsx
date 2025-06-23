@@ -157,6 +157,31 @@ const HowItWorks = () => {
           </div>
         </div>
 
+        {/* Benefits Section */}
+        <div className="glass-card p-8 mb-12">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold gradient-text mb-4">
+              Why Choose Our Approach?
+            </h3>
+            <p className="text-gray-600">
+              Designed by women, for women - with empathy and expertise at every step
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {benefits.map((benefit, index) => (
+              <div key={index} className="text-center glass-card-light p-6 soft-hover">
+                <div className="w-12 h-12 bg-gradient-to-r from-pink-400/20 to-purple-400/20 rounded-xl flex items-center justify-center mx-auto mb-4 border border-pink-200/50">
+                  <benefit.icon className="w-6 h-6 text-pink-400" />
+                </div>
+                <h4 className="font-bold text-gray-800 mb-2">{benefit.title}</h4>
+                <p className="text-gray-600 text-sm">{benefit.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </section>
   );
 };
