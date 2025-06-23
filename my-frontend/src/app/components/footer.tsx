@@ -1,13 +1,19 @@
 'use client';
 import React from 'react';
-import {Heart, Mail, Phone, MapPin, Shield, FileText}from 'lucide-react';
+import {Heart, Mail, Phone, MapPin, LinkedinIcon, XIcon, InstagramIcon}from 'lucide-react';
 
-const Footer = () =>{
+const Footer = () => {
     const quickLinks = [
         { name: 'How It Works', href: '#how-it-works' },
         { name: 'Risk Assessment', href: '/risk-assessment' },
         { name: 'Reports & Analytics', href: '/reports' },
         { name: 'Health Resources', href: '#resources' }
+      ];
+      const SocialMedia = [
+        { name: 'LinkedInIcon', href: 'https://www.linkedin.com/company/codessipers/?viewAsMember=true' },
+        { name: 'XIcon', href: 'https://x.com/Codessipers' },
+        { name: 'InstagramIcon', href: 'https://www.instagram.com/codessipers/' },
+        { name: 'Terms of Service', href: '#terms' }
       ];
       return (
         <footer className="relative bg-pink-500">
@@ -56,7 +62,32 @@ const Footer = () =>{
                   ))}
                 </ul>
               </div>
-      <footer/>        
+              <div>
+            <h3 className="font-bold text-white mb-6 tracking-wider text-sm">LEGAL</h3>
+            <ul className="space-y-3">
+              {SocialMedia.map((link, index) => (
+                <p key={index}>
+                  <a href={link.href} className="text-pink-100 hover:text-white transition-colors duration-300 text-sm">
+                    {link.name}
+                  </a>
+                </p>
+              ))}
+            </ul>
+          </div>
+          </div>
+         <div className="mt-8 pt-8 border-t border-pink-400/30">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-pink-100 text-sm">
+              © 2024 CerviCare AI. All rights reserved.
+            </div>
+            
+            <div className="text-pink-100 text-sm flex items-center gap-2">
+              Made with <Heart className="w-4 h-4 text-white animate-pulse" /> for women's health
+            </div>
+          </div>
+         </div>
+          </div> 
+        </footer>        
          );
            
     };
