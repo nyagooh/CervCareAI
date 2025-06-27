@@ -16,16 +16,6 @@ const Resources = () => {
       action: 'Set Reminders'
     },
  
-    {
-      icon: Heart,
-      title: 'Support Communities',
-      description: 'Connect with support groups and communities for women\'s health and cervical cancer survivors',
-      type: 'Community',
-      color: 'text-pink-500',
-      bgColor: 'bg-pink-50',
-      borderColor: 'border-pink-200',
-      action: 'Join Community'
-    },
       {
       icon: MapPin,
       title: 'Find Healthcare Providers',
@@ -36,6 +26,17 @@ const Resources = () => {
       borderColor: 'border-purple-200',
       action: 'Find Providers'
     },
+
+    {
+        icon: Heart,
+        title: 'Support Communities',
+        description: 'Connect with support groups and communities for women\'s health and cervical cancer survivors',
+        type: 'Community',
+        color: 'text-pink-500',
+        bgColor: 'bg-pink-50',
+        borderColor: 'border-pink-200',
+        action: 'Join Community'
+      },
     {
       icon: Phone,
       title: 'Helpline Support',
