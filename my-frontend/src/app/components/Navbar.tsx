@@ -15,11 +15,12 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Risk Assessment', href: '#risk-assessment' },
-    { name: 'Reports & Analytics', href: '#reports' },
+    { name: 'Home', href: '/' },
+    { name: 'How It Works', href: '/#how-it-works' },
+    { name: 'Risk Assessment', href: '/risk-assessment' },
+    { name: 'Reports & Analytics', href: '/Reports' },
   ];
+
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
