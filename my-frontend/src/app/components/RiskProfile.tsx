@@ -21,6 +21,35 @@ const RiskProfile = () => {
   
     return () => observer.disconnect();
   }, []);
+  const targetRiskScore = 28;
+
+useEffect(() => {
+  if (isVisible) {
+    const timer = setTimeout(() => {
+      const interval = setInterval(() => {
+        setRiskScore(prev => {
+          if (prev >= targetRiskScore) {
+            clearInterval(interval);
+            return targetRiskScore;
+          }
+          return prev + 1;
+        });
+      }, 50);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }
+}, [isVisible]);
+const getRiskLevel = (score: number) => {
+    if (score <= 30) return { level: 'Low Risk', ... };
+    if (score <= 60) return { level: 'Moderate Risk', ... };
+    return { level: 'Higher Risk', ... };
+  };
+  
+  const riskInfo = getRiskLevel(riskScore);
+  const circumference = 2 * Math.PI * 80;
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference - (riskScore / 100) * circumference;
   
 
   return (
