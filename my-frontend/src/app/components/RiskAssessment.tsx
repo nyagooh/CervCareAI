@@ -33,6 +33,241 @@ const RiskAssessment = () => {
     }
   };
 
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-8">
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 bg-gradient-to-r from-pink-400/20 to-rose-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-200/50">
+                <Calendar className="w-8 h-8 text-pink-400" />
+              </div>
+              <h3 className="text-2xl font-bold gradient-text mb-3">Basic Information</h3>
+              <p className="text-gray-600">Help us understand your health background</p>
+            </div>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-pink-500 mb-3">What's your age range?</label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {['18-25', '26-35', '36-45', '46-55', '56-65', '65+'].map((age) => (
+                    <button
+                      key={age}
+                      onClick={() => handleInputChange('age', age)}
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.age === age
+                          ? 'border-pink-400 bg-pink-50 text-pink-600'
+                          : 'border-gray-200 bg-white hover:border-pink-200 hover:bg-pink-50/50 text-gray-600'
+                      }`}
+                    >
+                      {age}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-purple-500 mb-3">When was your last cervical screening?</label>
+                <div className="space-y-3">
+                  {[
+                    'Within the last year',
+                    '1-3 years ago',
+                    '3-5 years ago',
+                    'More than 5 years ago',
+                    'Never had screening'
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('lastScreening', option)}
+                      className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                        formData.lastScreening === option
+                          ? 'border-purple-400 bg-purple-50 text-purple-600'
+                          : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          formData.lastScreening === option
+                            ? 'border-purple-400 bg-purple-400'
+                            : 'border-gray-300'
+                        }`}>
+                          {formData.lastScreening === option && (
+                            <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                          )}
+                        </div>
+                        <span className="text-sm font-medium">{option}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="space-y-8">
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 bg-gradient-to-r from-rose-400/20 to-pink-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-rose-200/50">
+                <Heart className="w-8 h-8 text-rose-400 gentle-heartbeat" />
+              </div>
+              <h3 className="text-2xl font-bold gradient-text mb-3">Health History</h3>
+              <p className="text-gray-600">Your family history helps us provide better care</p>
+            </div>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-rose-500 mb-3">Family history of cervical or other cancers?</label>
+                <div className="space-y-3">
+                  {[
+                    'No family history',
+                    'Cervical cancer in family',
+                    'Other cancers in family',
+                    'Multiple cancers in family',
+                    'Not sure'
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('familyHistory', option)}
+                      className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                        formData.familyHistory === option
+                          ? 'border-rose-400 bg-rose-50 text-rose-600'
+                          : 'border-gray-200 bg-white hover:border-rose-200 hover:bg-rose-50/50 text-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          formData.familyHistory === option
+                            ? 'border-rose-400 bg-rose-400'
+                            : 'border-gray-300'
+                        }`}>
+                          {formData.familyHistory === option && (
+                            <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                          )}
+                        </div>
+                        <span className="text-sm font-medium">{option}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-cyan-500 mb-3">Have you received the HPV vaccination?</label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {['Yes, fully vaccinated', 'Partially vaccinated', 'No vaccination'].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('hpvVaccination', option)}
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.hpvVaccination === option
+                          ? 'border-cyan-400 bg-cyan-50 text-cyan-600'
+                          : 'border-gray-200 bg-white hover:border-cyan-200 hover:bg-cyan-50/50 text-gray-600'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="space-y-8">
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-400/20 to-cyan-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-200/50">
+                <Stethoscope className="w-8 h-8 text-purple-400" />
+              </div>
+              <h3 className="text-2xl font-bold gradient-text mb-3">Lifestyle & Symptoms</h3>
+              <p className="text-gray-600">Final questions to complete your health profile</p>
+            </div>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-purple-500 mb-3">Lifestyle factors (select all that apply)</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {[
+                    'Non-smoker',
+                    'Current smoker',
+                    'Former smoker',
+                    'Regular exercise',
+                    'Healthy diet',
+                    'Stress management'
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        const current = formData.lifestyle.split(',').filter(Boolean);
+                        const updated = current.includes(option)
+                          ? current.filter(item => item !== option)
+                          : [...current, option];
+                        handleInputChange('lifestyle', updated.join(','));
+                      }}
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.lifestyle.includes(option)
+                          ? 'border-purple-400 bg-purple-50 text-purple-600'
+                          : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded border-2 ${
+                          formData.lifestyle.includes(option)
+                            ? 'border-purple-400 bg-purple-400'
+                            : 'border-gray-300'
+                        }`}>
+                          {formData.lifestyle.includes(option) && (
+                            <CheckCircle className="w-3 h-3 text-white" />
+                          )}
+                        </div>
+                        <span>{option}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-pink-500 mb-3">Any concerning symptoms? (optional)</label>
+                <div className="space-y-3">
+                  {[
+                    'No symptoms',
+                    'Unusual bleeding',
+                    'Pelvic pain',
+                    'Unusual discharge',
+                    'Pain during intimacy',
+                    'Other concerns'
+                  ].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('symptoms', option)}
+                      className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                        formData.symptoms === option
+                          ? 'border-pink-400 bg-pink-50 text-pink-600'
+                          : 'border-gray-200 bg-white hover:border-pink-200 hover:bg-pink-50/50 text-gray-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full border-2 ${
+                          formData.symptoms === option
+                            ? 'border-pink-400 bg-pink-400'
+                            : 'border-gray-300'
+                        }`}>
+                          {formData.symptoms === option && (
+                            <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                          )}
+                        </div>
+                        <span className="text-sm font-medium">{option}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+
   return (
     <section id="risk-assessment" className="py-20 px-6 relative bg-gradient-to-br from-purple-50 via-rose-50 to-pink-50">
       {/* Soft Background Pattern */}
