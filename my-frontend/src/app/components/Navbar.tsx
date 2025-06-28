@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Heart, Menu, X, Shield, Brain, Stethoscope } from 'lucide-react';
+import { Heart, Menu, X, Shield, Brain, Stethoscope, LogIn } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -59,7 +59,11 @@ const Navbar = () => {
           </div>
 
           {/* CTA Button */}
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center gap-3">
+            <button className="px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center gap-2 text-sm">
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </button>
             <button className="px-6 py-2.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2 text-sm">
               <Stethoscope className="w-4 h-4" />
               Start Assessment
@@ -89,7 +93,11 @@ const Navbar = () => {
                   {link.name}
                 </a>
               ))}
-              <div className="pt-3">
+              <div className="pt-3 space-y-3">
+                <button className="w-full px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center justify-center gap-2 text-sm">
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </button>
                 <button className="w-full px-6 py-2.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-pink-300/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm">
                   <Stethoscope className="w-4 h-4" />
                   Start Assessment
