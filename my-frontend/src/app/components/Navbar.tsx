@@ -2,9 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Menu, X, Shield, Brain, Stethoscope, LogIn } from 'lucide-react';
 
+
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +22,7 @@ const Navbar = () => {
     { name: 'How It Works', href: '/#how-it-works' },
     { name: 'Risk Assessment', href: '/risk-assessment' },
     { name: 'Reports & Analytics', href: '/Reports' },
+
   ];
 
 
@@ -60,10 +64,10 @@ const Navbar = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-3">
-            <button className="px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center gap-2 text-sm">
+            <a href="/signup" className="px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center gap-2 text-sm">
               <LogIn className="w-4 h-4" />
               Sign In
-            </button>
+            </a>
             <button className="px-6 py-2.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2 text-sm">
               <Stethoscope className="w-4 h-4" />
               Start Assessment
@@ -94,10 +98,10 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="pt-3 space-y-3">
-                <button className="w-full px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center justify-center gap-2 text-sm">
+                <a href="/signup" className="w-full px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center justify-center gap-2 text-sm" onClick={() => setIsMobileMenuOpen(false)}>
                   <LogIn className="w-4 h-4" />
                   Sign In
-                </button>
+                </a>
                 <button className="w-full px-6 py-2.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-pink-300/50 transition-all duration-300 flex items-center justify-center gap-2 text-sm">
                   <Stethoscope className="w-4 h-4" />
                   Start Assessment
@@ -107,6 +111,7 @@ const Navbar = () => {
           </div>
         )}
       </div>
+      
     </nav>
   );
 };
