@@ -3,17 +3,13 @@
 import React, { useState } from 'react';
 import { X, LogIn, Shield, Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
-interface SignInModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
+const SignIn = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -40,40 +36,23 @@ const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      
-      {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-pink-400 to-purple-500 p-6 text-white relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-              <Heart className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold">Welcome to CerviCare AI</h2>
-              <p className="text-pink-100 text-sm">Your health journey starts here</p>
-            </div>
+  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 py-24 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-2xl">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-pink-400 to-purple-500 p-6 text-white rounded-xl mb-6 relative">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+            <Heart className="w-6 h-6" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold">Welcome to CerviCare AI</h2>
+            <p className="text-pink-100 text-sm">Your health journey starts here</p>
           </div>
         </div>
-
-        {/* Content */}
-        <div className="p-6">
+      </div>
+      {/* Content */}
+      <div>
           {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
@@ -109,12 +88,22 @@ const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (e.target.value && !e.target.value.includes('@')) {
+                      setEmailError('Please enter a valid email address.');
+                    } else {
+                      setEmailError('');
+                    }
+                  }}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${emailError ? 'border-red-500' : 'border-gray-200'}`}
                   placeholder="Enter your email"
                   required
                 />
               </div>
+              {emailError && (
+                <p className="text-red-500 text-xs mt-1">{emailError}</p>
+              )}
             </div>
 
             <div>
@@ -177,4 +166,4 @@ const SignInModal = ({ isOpen, onClose }: SignInModalProps) => {
   );
 };
 
-export default SignInModal; 
+export default SignIn; 
