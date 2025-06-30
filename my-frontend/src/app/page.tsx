@@ -3,6 +3,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 
 import HowItWorks from './components/HowItWorks';
+import Resources from './components/resources';
 import Footer from './components/footer';
 
 
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <About />
       <HowItWorks/>
+      <Resources/>
       <Footer/>
        </div>
   )
