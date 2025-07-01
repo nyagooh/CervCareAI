@@ -77,17 +77,19 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen((open) => !open)}
-                  className="focus:outline-none"
+                  className="focus:outline-none flex items-center"
+                  aria-label="Open profile menu"
                 >
                   <img
                     src={user.photoURL || '/default-profile.png'}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full border-2 border-pink-400 shadow-sm object-cover"
+                    className="w-10 h-10 rounded-full border-2 border-pink-400 shadow-sm object-cover bg-white"
+                    style={{ objectFit: 'cover', objectPosition: 'center' }}
                   />
                 </button>
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100">
-                    <div className="px-4 py-2 text-sm text-gray-700 font-semibold">
+                  <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100">
+                    <div className="px-4 py-2 text-sm text-gray-700 font-semibold truncate">
                       {user.displayName || user.email}
                     </div>
                     <div className="px-4 py-2 text-xs text-gray-500 capitalize">
