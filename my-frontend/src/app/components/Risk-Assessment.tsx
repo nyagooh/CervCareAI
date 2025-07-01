@@ -2,8 +2,14 @@
 
 import React, { useState, useRef } from 'react';
 import { ChevronRight, ChevronLeft, Heart, Calendar, Shield, Stethoscope, ArrowRight, CheckCircle, Lock } from 'lucide-react';
+import { useUser } from '../UserContext';
 
-const RiskAssessment = () => {
+interface RiskAssessmentProps {
+  onShowProfile: () => void;
+  setClientName: (name: string) => void;
+}
+
+const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClientName }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     age: '',
@@ -16,6 +22,7 @@ const RiskAssessment = () => {
   const [showDashboard, setShowDashboard] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
   const riskProfileRef = typeof window !== 'undefined' ? document.getElementById('risk-profile') : null;
+  const { user } = useUser();
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -57,6 +64,10 @@ const RiskAssessment = () => {
 
   const handleShowDashboard = () => {
     setShowDashboard(true);
+    // Prefer user's displayName, fallback to email, fallback to 'Client'
+    const name = user?.displayName || user?.email || 'Client';
+    setClientName(name);
+    onShowProfile();
     setTimeout(() => {
       dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100); // slight delay to ensure render
