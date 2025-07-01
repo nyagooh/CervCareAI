@@ -372,7 +372,13 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
 
           {/* Form Content */}
           <div className="min-h-[500px]">
-            {showDashboard ? (
+            {!user ? (
+              <div className="flex flex-col items-center justify-center h-full py-24">
+                <h3 className="text-2xl font-bold text-pink-600 mb-4">Sign in to access your personalized report</h3>
+                <p className="text-gray-600 mb-6">Please sign in or create an account to view and download your assessment results and risk profile dashboard.</p>
+                <a href="/signup" className="px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300">Sign In / Create Account</a>
+              </div>
+            ) : showDashboard ? (
               <div ref={dashboardRef} className="mt-8">
                 <h3 className="text-2xl font-bold mb-4 text-center text-pink-600">Personalized Screening Recommendations</h3>
                 <div className="space-y-6 mb-8">
