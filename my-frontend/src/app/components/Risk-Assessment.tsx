@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ChevronRight, ChevronLeft, Heart, Calendar, Shield, Stethoscope, ArrowRight, CheckCircle, Lock } from 'lucide-react';
 
 const RiskAssessment = () => {
@@ -14,6 +14,7 @@ const RiskAssessment = () => {
     hpvVaccination: '',
   });
   const [showDashboard, setShowDashboard] = useState(false);
+  const dashboardRef = useRef<HTMLDivElement>(null);
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -52,6 +53,25 @@ const RiskAssessment = () => {
       guideline: 'Recommended if abnormal results are found in Pap or HPV tests.'
     }
   ];
+
+  const handleShowDashboard = () => {
+    setShowDashboard(true);
+    setTimeout(() => {
+      dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100); // slight delay to ensure render
+  };
+
+  const handleDownload = () => {
+    // For now, just download a dummy text file
+    const text = recommendations.map(r => `${r.test}: ${r.frequency}\n${r.guideline}`).join('\n\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'health_report.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -346,9 +366,9 @@ const RiskAssessment = () => {
           {/* Form Content */}
           <div className="min-h-[500px]">
             {showDashboard ? (
-              <div className="mt-8">
+              <div ref={dashboardRef} className="mt-8">
                 <h3 className="text-2xl font-bold mb-4 text-center text-pink-600">Personalized Screening Recommendations</h3>
-                <div className="space-y-6">
+                <div className="space-y-6 mb-8">
                   {recommendations.map((rec, idx) => (
                     <div key={idx} className="p-6 rounded-xl border-2 border-pink-200 bg-white shadow-sm">
                       <div className="flex items-center gap-4 mb-2">
@@ -360,6 +380,20 @@ const RiskAssessment = () => {
                     </div>
                   ))}
                 </div>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-8">
+                  <button
+                    onClick={handleDownload}
+                    className="px-6 py-3 bg-gradient-to-r from-purple-400 to-pink-400 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                  >
+                    Download Report
+                  </button>
+                  <button
+                    onClick={() => setShowDashboard(false)}
+                    className="px-6 py-3 bg-white border-2 border-pink-300 text-pink-600 font-semibold rounded-full shadow hover:bg-pink-50 transition-all duration-300 flex items-center gap-2"
+                  >
+                    Back to Assessment
+                  </button>
+                </div>
               </div>
             ) : (
               renderStep()
@@ -370,9 +404,9 @@ const RiskAssessment = () => {
           <div className="flex justify-between items-center mt-12">
             <button
               onClick={prevStep}
-              disabled={currentStep === 1}
+              disabled={currentStep === 1 || showDashboard}
               className={`flex items-center gap-3 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-                currentStep === 1
+                currentStep === 1 || showDashboard
                   ? 'text-gray-400 cursor-not-allowed opacity-50'
                   : 'text-gray-600 hover:text-pink-500 soft-button-outline'
               }`}
@@ -380,17 +414,16 @@ const RiskAssessment = () => {
               <ChevronLeft className="w-5 h-5" />
               Previous
             </button>
-
-            {currentStep === totalSteps ? (
+            {currentStep === totalSteps && !showDashboard ? (
               <button
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
-                onClick={() => setShowDashboard(true)}
+                onClick={handleShowDashboard}
               >
                 <Shield className="w-5 h-5 group-hover:animate-pulse" />
                 Get My Health Report
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            ) : (
+            ) : !showDashboard ? (
               <button
                 onClick={nextStep}
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
@@ -398,7 +431,7 @@ const RiskAssessment = () => {
                 Continue
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            )}
+            ) : null}
           </div>
         </div>
 
