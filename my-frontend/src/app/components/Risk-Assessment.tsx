@@ -15,6 +15,7 @@ const RiskAssessment = () => {
   });
   const [showDashboard, setShowDashboard] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
+  const riskProfileRef = typeof window !== 'undefined' ? document.getElementById('risk-profile') : null;
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -40,7 +41,7 @@ const RiskAssessment = () => {
     {
       test: 'Pap Smear',
       frequency: 'Every 3 years',
-      guideline: 'For women aged 21-29, a Pap smear every 3 years is recommended.'
+      guideline: 'Pap smears are recommended for women aged 21-29 every 3 years.'
     },
     {
       test: 'HPV Test',
@@ -61,16 +62,11 @@ const RiskAssessment = () => {
     }, 100); // slight delay to ensure render
   };
 
-  const handleDownload = () => {
-    // For now, just download a dummy text file
-    const text = recommendations.map(r => `${r.test}: ${r.frequency}\n${r.guideline}`).join('\n\n');
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'health_report.txt';
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleGoToRiskProfile = () => {
+    const el = document.getElementById('risk-profile');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const renderStep = () => {
@@ -382,10 +378,10 @@ const RiskAssessment = () => {
                 </div>
                 <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-8">
                   <button
-                    onClick={handleDownload}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-400 to-pink-400 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                    onClick={handleGoToRiskProfile}
+                    className="px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300 flex items-center gap-2"
                   >
-                    Download Report
+                    View Full Risk Profile & Download Report
                   </button>
                   <button
                     onClick={() => setShowDashboard(false)}
