@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { X, LogIn, Shield, Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from './firebase';
+import { useUser } from '../UserContext';
 
 const SignIn = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -10,12 +13,16 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
+  const { user, role, setRole } = useUser();
+  const [showRoleModal, setShowRoleModal] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      // TODO: Implement Firebase Google sign-in
-      console.log('Google sign-in clicked');
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      // User info is now in context via onAuthStateChanged
+      if (!role) setShowRoleModal(true);
     } catch (error) {
       console.error('Google sign-in error:', error);
     } finally {
@@ -37,22 +44,22 @@ const SignIn = () => {
   };
 
   return (
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 py-24 px-4 sm:px-6 lg:px-8">
-    <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-2xl">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-pink-400 to-purple-500 p-6 text-white rounded-xl mb-6 relative">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-            <Heart className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold">Welcome to CerviCare AI</h2>
-            <p className="text-pink-100 text-sm">Your health journey starts here</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 py-24 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-2xl">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-pink-400 to-purple-500 p-6 text-white rounded-xl mb-6 relative">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+              <Heart className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">Welcome to CerviCare AI</h2>
+              <p className="text-pink-100 text-sm">Your health journey starts here</p>
+            </div>
           </div>
         </div>
-      </div>
-      {/* Content */}
-      <div>
+        {/* Content */}
+        <div>
           {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
@@ -162,6 +169,28 @@ const SignIn = () => {
           </div>
         </div>
       </div>
+      {/* Role Selection Modal */}
+      {showRoleModal && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-4 text-center">Select your role</h3>
+            <div className="flex gap-4 justify-center">
+              <button
+                className="px-6 py-2 bg-pink-400 text-white rounded-xl font-semibold hover:bg-pink-500"
+                onClick={() => { setRole('patient'); setShowRoleModal(false); }}
+              >
+                Patient
+              </button>
+              <button
+                className="px-6 py-2 bg-purple-500 text-white rounded-xl font-semibold hover:bg-purple-600"
+                onClick={() => { setRole('doctor'); setShowRoleModal(false); }}
+              >
+                Doctor
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,14 +1,18 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Heart, Menu, X, Shield, Brain, Stethoscope, LogIn } from 'lucide-react';
+import { useUser } from '../UserContext';
+import { signOut } from 'firebase/auth';
+import { auth } from './firebase';
 
 
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, role, setRole } = useUser();
   
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -25,6 +29,11 @@ const Navbar = () => {
 
   ];
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    setRole(null);
+    setDropdownOpen(false);
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -62,16 +71,53 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
+          {/* CTA Button or User Profile */}
           <div className="hidden md:flex items-center gap-3">
-            <a href="/signup" className="px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center gap-2 text-sm">
-              <LogIn className="w-4 h-4" />
-              Sign In
-            </a>
-            <button className="px-6 py-2.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2 text-sm">
-              <Stethoscope className="w-4 h-4" />
-              Start Assessment
-            </button>
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen((open) => !open)}
+                  className="focus:outline-none flex items-center"
+                  aria-label="Open profile menu"
+                >
+                  <img
+                    src={user.photoURL || '/default-profile.png'}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full border-2 border-pink-400 shadow-sm object-cover bg-white"
+                    style={{ objectFit: 'cover', objectPosition: 'center' }}
+                  />
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100">
+                    <div className="px-4 py-2 text-sm text-gray-700 font-semibold truncate">
+                      {user.displayName || user.email}
+                    </div>
+                    <div className="px-4 py-2 text-xs text-gray-500 capitalize">
+                      {role || 'No role'}
+                    </div>
+                    <hr className="my-1" />
+                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 rounded-xl">Profile</a>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-pink-50 rounded-xl"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <a href="/signup" className="px-4 py-2 text-pink-500 hover:text-pink-600 font-semibold transition-colors duration-300 flex items-center gap-2 text-sm">
+                  <LogIn className="w-4 h-4" />
+                  Sign In
+                </a>
+                <button className="px-6 py-2.5 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-lg hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2 text-sm">
+                  <Stethoscope className="w-4 h-4" />
+                  Start Assessment
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
