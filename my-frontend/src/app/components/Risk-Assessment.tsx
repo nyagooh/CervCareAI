@@ -13,6 +13,7 @@ const RiskAssessment = () => {
     symptoms: '',
     hpvVaccination: '',
   });
+  const [showDashboard, setShowDashboard] = useState(false);
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -33,6 +34,24 @@ const RiskAssessment = () => {
     }
   };
 
+  // Dummy recommendation data
+  const recommendations = [
+    {
+      test: 'Pap Smear',
+      frequency: 'Every 3 years',
+      guideline: 'For women aged 21-29, a Pap smear every 3 years is recommended.'
+    },
+    {
+      test: 'HPV Test',
+      frequency: 'Every 5 years',
+      guideline: 'For women aged 30-65, co-testing with Pap smear and HPV test every 5 years is recommended.'
+    },
+    {
+      test: 'Colposcopy',
+      frequency: 'As needed',
+      guideline: 'Recommended if abnormal results are found in Pap or HPV tests.'
+    }
+  ];
 
   const renderStep = () => {
     switch (currentStep) {
@@ -326,7 +345,25 @@ const RiskAssessment = () => {
 
           {/* Form Content */}
           <div className="min-h-[500px]">
-            {renderStep()}
+            {showDashboard ? (
+              <div className="mt-8">
+                <h3 className="text-2xl font-bold mb-4 text-center text-pink-600">Personalized Screening Recommendations</h3>
+                <div className="space-y-6">
+                  {recommendations.map((rec, idx) => (
+                    <div key={idx} className="p-6 rounded-xl border-2 border-pink-200 bg-white shadow-sm">
+                      <div className="flex items-center gap-4 mb-2">
+                        <Stethoscope className="w-6 h-6 text-purple-400" />
+                        <span className="text-lg font-semibold text-gray-800">{rec.test}</span>
+                        <span className="ml-auto px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-bold">{rec.frequency}</span>
+                      </div>
+                      <p className="text-gray-600 text-sm">{rec.guideline}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              renderStep()
+            )}
           </div>
 
           {/* Navigation Buttons */}
@@ -345,7 +382,10 @@ const RiskAssessment = () => {
             </button>
 
             {currentStep === totalSteps ? (
-              <button className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2">
+              <button
+                className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
+                onClick={() => setShowDashboard(true)}
+              >
                 <Shield className="w-5 h-5 group-hover:animate-pulse" />
                 Get My Health Report
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
