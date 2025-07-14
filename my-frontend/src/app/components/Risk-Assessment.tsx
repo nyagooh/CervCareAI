@@ -19,6 +19,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     ageFirstSex: '',
     smoking: '',
     insurance: '',
+    hivStatus: '',
     hpvTest: '',
     papSmear: '',
     stdsHistory: '',
@@ -98,18 +99,18 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
               <div className="w-16 h-16 bg-gradient-to-r from-pink-400/20 to-rose-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-200/50">
                 <Calendar className="w-8 h-8 text-pink-400" />
               </div>
-              <h3 className="text-2xl font-bold gradient-text mb-3">Basic Information</h3>
-              <p className="text-gray-600">Please provide your basic details</p>
+              <h3 className="text-2xl font-bold gradient-text mb-3">Patient Information</h3>
+              <p className="text-gray-600">Please enter the patient's demographic and contact details.</p>
             </div>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Number</label>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient ID</label>
                 <input
                   type="text"
                   value={formData.patientNumber}
                   onChange={e => handleInputChange('patientNumber', e.target.value)}
                   className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
-                  placeholder="Enter your patient number"
+                  placeholder="Enter Patient ID"
                   required
                 />
               </div>
@@ -120,23 +121,23 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                   value={formData.phoneNumber}
                   onChange={e => handleInputChange('phoneNumber', e.target.value)}
                   className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
-                  placeholder="Enter your phone number"
+                  placeholder="Enter phone number"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-pink-500 mb-2">Age</label>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Age</label>
                 <input
                   type="number"
                   value={formData.age}
                   onChange={e => handleInputChange('age', e.target.value)}
                   className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
-                  placeholder="Enter your age"
+                  placeholder="Enter age"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-pink-500 mb-2">Region</label>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Region</label>
                 <select
                   value={formData.region}
                   onChange={e => handleInputChange('region', e.target.value)}
@@ -160,7 +161,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 <Heart className="w-8 h-8 text-purple-400 gentle-heartbeat" />
               </div>
               <h3 className="text-2xl font-bold gradient-text mb-3">Personal & Lifestyle</h3>
-              <p className="text-gray-600">Tell us more about your background</p>
+              <p className="text-gray-600">Provide relevant personal and lifestyle history for risk assessment.</p>
             </div>
             <div className="space-y-6">
               <div>
@@ -206,6 +207,22 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                   ))}
                 </div>
               </div>
+              <div>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">HIV Status</label>
+                <div className="flex gap-4">
+                  {['Positive', 'Negative'].map(option => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('hivStatus', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.hivStatus === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -217,7 +234,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 <Stethoscope className="w-8 h-8 text-purple-400" />
               </div>
               <h3 className="text-2xl font-bold gradient-text mb-3">Screening & Medical History</h3>
-              <p className="text-gray-600">Final questions to complete your health profile</p>
+              <p className="text-gray-600">Document the patient's screening results and medical history.</p>
             </div>
             <div className="space-y-6">
               <div>
@@ -412,7 +429,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 onClick={handleShowDashboard}
               >
                 <Shield className="w-5 h-5 group-hover:animate-pulse" />
-                Get My Health Report
+                Get Report
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
             ) : !showDashboard ? (
