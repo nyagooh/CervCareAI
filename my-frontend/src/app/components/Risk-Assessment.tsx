@@ -33,6 +33,13 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
   const { user } = useUser();
   const db = getFirestore();
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [touched, setTouched] = useState<{[key: string]: boolean}>({});
+  const [sectionError, setSectionError] = useState('');
+
+  // Phone validation (Kenyan format)
+  const isValidPhone = (phone: string) => {
+    return /^((\+254|0)7\d{8})$/.test(phone);
+  };
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -51,6 +58,31 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleNextStep = () => {
+    if (currentStep === 1 && !isStep1Valid) {
+      setSectionError('Please fill in all required fields with valid information.');
+      setTouched({
+        patientNumber: true,
+        phoneNumber: true,
+        age: true,
+        region: true,
+      });
+      return;
+    }
+    if (currentStep === 2 && !isStep2Valid) {
+      setSectionError('Please fill in all required fields with valid information.');
+      setTouched({
+        ageFirstSex: true,
+        smoking: true,
+        insurance: true,
+        hivStatus: true,
+      });
+      return;
+    }
+    setSectionError('');
+    nextStep();
   };
 
   // Dummy recommendation data
@@ -124,10 +156,14 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                   type="text"
                   value={formData.patientNumber}
                   onChange={e => handleInputChange('patientNumber', e.target.value)}
-                  className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
+                  onBlur={() => setTouched(t => ({ ...t, patientNumber: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.patientNumber && !formData.patientNumber ? 'border-red-500' : ''}`}
                   placeholder="Enter Patient ID"
                   required
                 />
+                {touched.patientNumber && !formData.patientNumber && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Phone Number</label>
@@ -135,10 +171,17 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                   type="tel"
                   value={formData.phoneNumber}
                   onChange={e => handleInputChange('phoneNumber', e.target.value)}
-                  className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
+                  onBlur={() => setTouched(t => ({ ...t, phoneNumber: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.phoneNumber && (!formData.phoneNumber || !isValidPhone(formData.phoneNumber)) ? 'border-red-500' : ''}`}
                   placeholder="Enter phone number"
                   required
                 />
+                {touched.phoneNumber && !formData.phoneNumber && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
+                {touched.phoneNumber && formData.phoneNumber && !isValidPhone(formData.phoneNumber) && (
+                  <p className="text-red-500 text-xs mt-1">Enter a valid Kenyan phone number (07XXXXXXXX or +2547XXXXXXXX)</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Age</label>
@@ -146,17 +189,22 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                   type="number"
                   value={formData.age}
                   onChange={e => handleInputChange('age', e.target.value)}
-                  className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
+                  onBlur={() => setTouched(t => ({ ...t, age: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.age && !formData.age ? 'border-red-500' : ''}`}
                   placeholder="Enter age"
                   required
                 />
+                {touched.age && !formData.age && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Region</label>
                 <select
                   value={formData.region}
                   onChange={e => handleInputChange('region', e.target.value)}
-                  className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
+                  onBlur={() => setTouched(t => ({ ...t, region: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.region && !formData.region ? 'border-red-500' : ''}`}
                   required
                 >
                   <option value="">Select region</option>
@@ -164,8 +212,14 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                     <option key={region} value={region}>{region.charAt(0).toUpperCase() + region.slice(1)}</option>
                   ))}
                 </select>
+                {touched.region && !formData.region && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
               </div>
             </div>
+            {sectionError && (
+              <div className="text-red-500 text-sm mt-4 text-center">{sectionError}</div>
+            )}
           </div>
         );
       case 2:
@@ -185,10 +239,14 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                   type="number"
                   value={formData.ageFirstSex}
                   onChange={e => handleInputChange('ageFirstSex', e.target.value)}
-                  className="w-full p-3 border rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300"
+                  onBlur={() => setTouched(t => ({ ...t, ageFirstSex: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300 ${touched.ageFirstSex && !formData.ageFirstSex ? 'border-red-500' : ''}`}
                   placeholder="Enter age"
                   required
                 />
+                {touched.ageFirstSex && !formData.ageFirstSex && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-purple-500 mb-2">Do you smoke?</label>
@@ -239,6 +297,9 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 </div>
               </div>
             </div>
+            {sectionError && (
+              <div className="text-red-500 text-sm mt-4 text-center">{sectionError}</div>
+            )}
           </div>
         );
       case 3:
@@ -317,6 +378,9 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 </div>
               </div>
             </div>
+            {sectionError && (
+              <div className="text-red-500 text-sm mt-4 text-center">{sectionError}</div>
+            )}
           </div>
         );
       default:
@@ -324,6 +388,9 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     }
   };
 
+  const isStep1Valid = formData.patientNumber && isValidPhone(formData.phoneNumber) && formData.age && formData.region;
+  const isStep2Valid = formData.ageFirstSex && formData.smoking && formData.insurance && formData.hivStatus;
+  const isStep3Valid = formData.hpvTest && formData.papSmear && formData.stdsHistory && formData.lastScreeningType;
 
   return (
     <section id="risk-assessment" className="py-20 px-6 relative bg-gradient-to-br from-purple-50 via-rose-50 to-pink-50">
@@ -448,6 +515,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
               <button
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
                 onClick={handleShowDashboard}
+                disabled={!isStep3Valid}
               >
                 <Shield className="w-5 h-5 group-hover:animate-pulse" />
                 Get Report
@@ -455,8 +523,12 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
               </button>
             ) : !showDashboard ? (
               <button
-                onClick={nextStep}
+                onClick={handleNextStep}
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
+                disabled={
+                  (currentStep === 1 && !isStep1Valid) ||
+                  (currentStep === 2 && !isStep2Valid)
+                }
               >
                 Continue
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
