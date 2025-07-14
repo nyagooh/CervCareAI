@@ -1,9 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ChevronRight, ChevronLeft, Heart, Calendar, Shield, Stethoscope, ArrowRight, CheckCircle, Lock } from 'lucide-react';
+import { useUser } from '../UserContext';
 
-const RiskAssessment = () => {
+interface RiskAssessmentProps {
+  onShowProfile: () => void;
+  setClientName: (name: string) => void;
+}
+
+const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClientName }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     age: '',
@@ -13,6 +19,10 @@ const RiskAssessment = () => {
     symptoms: '',
     hpvVaccination: '',
   });
+  const [showDashboard, setShowDashboard] = useState(false);
+  const dashboardRef = useRef<HTMLDivElement>(null);
+  const riskProfileRef = typeof window !== 'undefined' ? document.getElementById('risk-profile') : null;
+  const { user } = useUser();
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -33,6 +43,42 @@ const RiskAssessment = () => {
     }
   };
 
+  // Dummy recommendation data
+  const recommendations = [
+    {
+      test: 'Pap Smear',
+      frequency: 'Every 3 years',
+      guideline: 'Pap smears are recommended for women aged 21-29 every 3 years.'
+    },
+    {
+      test: 'HPV Test',
+      frequency: 'Every 5 years',
+      guideline: 'For women aged 30-65, co-testing with Pap smear and HPV test every 5 years is recommended.'
+    },
+    {
+      test: 'Colposcopy',
+      frequency: 'As needed',
+      guideline: 'Recommended if abnormal results are found in Pap or HPV tests.'
+    }
+  ];
+
+  const handleShowDashboard = () => {
+    setShowDashboard(true);
+    // Prefer user's displayName, fallback to email, fallback to 'Client'
+    const name = user?.displayName || user?.email || 'Client';
+    setClientName(name);
+    onShowProfile();
+    setTimeout(() => {
+      dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100); // slight delay to ensure render
+  };
+
+  const handleGoToRiskProfile = () => {
+    const el = document.getElementById('risk-profile');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -326,16 +372,54 @@ const RiskAssessment = () => {
 
           {/* Form Content */}
           <div className="min-h-[500px]">
-            {renderStep()}
+            {!user ? (
+              <div className="flex flex-col items-center justify-center h-full py-24">
+                <h3 className="text-2xl font-bold text-pink-600 mb-4">Sign in to access your personalized report</h3>
+                <p className="text-gray-600 mb-6">Please sign in or create an account to view and download your assessment results and risk profile dashboard.</p>
+                <a href="/signup" className="px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300">Sign In / Create Account</a>
+              </div>
+            ) : showDashboard ? (
+              <div ref={dashboardRef} className="mt-8">
+                <h3 className="text-2xl font-bold mb-4 text-center text-pink-600">Personalized Screening Recommendations</h3>
+                <div className="space-y-6 mb-8">
+                  {recommendations.map((rec, idx) => (
+                    <div key={idx} className="p-6 rounded-xl border-2 border-pink-200 bg-white shadow-sm">
+                      <div className="flex items-center gap-4 mb-2">
+                        <Stethoscope className="w-6 h-6 text-purple-400" />
+                        <span className="text-lg font-semibold text-gray-800">{rec.test}</span>
+                        <span className="ml-auto px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-bold">{rec.frequency}</span>
+                      </div>
+                      <p className="text-gray-600 text-sm">{rec.guideline}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-8">
+                  <button
+                    onClick={handleGoToRiskProfile}
+                    className="px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300 flex items-center gap-2"
+                  >
+                    View Full Risk Profile & Download Report
+                  </button>
+                  <button
+                    onClick={() => setShowDashboard(false)}
+                    className="px-6 py-3 bg-white border-2 border-pink-300 text-pink-600 font-semibold rounded-full shadow hover:bg-pink-50 transition-all duration-300 flex items-center gap-2"
+                  >
+                    Back to Assessment
+                  </button>
+                </div>
+              </div>
+            ) : (
+              renderStep()
+            )}
           </div>
 
           {/* Navigation Buttons */}
           <div className="flex justify-between items-center mt-12">
             <button
               onClick={prevStep}
-              disabled={currentStep === 1}
+              disabled={currentStep === 1 || showDashboard}
               className={`flex items-center gap-3 px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-                currentStep === 1
+                currentStep === 1 || showDashboard
                   ? 'text-gray-400 cursor-not-allowed opacity-50'
                   : 'text-gray-600 hover:text-pink-500 soft-button-outline'
               }`}
@@ -343,14 +427,16 @@ const RiskAssessment = () => {
               <ChevronLeft className="w-5 h-5" />
               Previous
             </button>
-
-            {currentStep === totalSteps ? (
-              <button className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2">
+            {currentStep === totalSteps && !showDashboard ? (
+              <button
+                className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
+                onClick={handleShowDashboard}
+              >
                 <Shield className="w-5 h-5 group-hover:animate-pulse" />
                 Get My Health Report
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            ) : (
+            ) : !showDashboard ? (
               <button
                 onClick={nextStep}
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
@@ -358,7 +444,7 @@ const RiskAssessment = () => {
                 Continue
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            )}
+            ) : null}
           </div>
         </div>
 

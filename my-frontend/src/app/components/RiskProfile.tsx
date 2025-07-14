@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, Shield, Calendar, TrendingDown, TrendingUp, CheckCircle, AlertCircle, Info, Download, Share, Stethoscope, ArrowRight, Sparkles } from 'lucide-react';
 
-const RiskProfile = () => {
+interface RiskProfileProps {
+  clientName: string;
+}
+
+const RiskProfile: React.FC<RiskProfileProps> = ({ clientName }) => {
   const [riskScore, setRiskScore] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   
@@ -156,7 +160,7 @@ const RiskProfile = () => {
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-            <span className="block text-gray-800">Your Cervical Health</span>
+            <span className="block text-gray-800">{clientName}&apos;s Cervical Health</span>
             <span className="block gradient-text">Risk Profile</span>
           </h2>
           
