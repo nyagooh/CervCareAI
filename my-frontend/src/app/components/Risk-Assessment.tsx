@@ -137,6 +137,23 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     'pumwani', 'kakamega', 'machakos', 'embu', 'mombasa', 'loitoktok', 'garisaa', 'kitale', 'moi', 'kericho'
   ];
 
+  // Add this function for step 3 validation and warning
+  const handleGetReport = () => {
+    if (!isStep3Valid) {
+      setSectionError('Please fill in all required fields with valid information.');
+      setTouched(t => ({
+        ...t,
+        hpvTest: true,
+        papSmear: true,
+        stdsHistory: true,
+        lastScreeningType: true,
+      }));
+      return;
+    }
+    setSectionError('');
+    handleShowDashboard();
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -514,26 +531,21 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
             {currentStep === totalSteps && !showDashboard ? (
               <button
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
-                onClick={handleShowDashboard}
-                disabled={!isStep3Valid}
+                onClick={handleGetReport}
               >
                 <Shield className="w-5 h-5 group-hover:animate-pulse" />
                 Get Report
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            ) : !showDashboard ? (
+            ) : (
               <button
                 onClick={handleNextStep}
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
-                disabled={
-                  (currentStep === 1 && !isStep1Valid) ||
-                  (currentStep === 2 && !isStep2Valid)
-                }
               >
                 Continue
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            ) : null}
+            )}
           </div>
         </div>
 
