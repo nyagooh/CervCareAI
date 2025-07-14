@@ -310,40 +310,6 @@ const RiskProfile: React.FC<RiskProfileProps> = ({ clientName }) => {
           </div>
         </div>
 
-        {/* Healthcare Provider Connection */}
-        <div className="mt-16">
-          <div className="glass-card p-8 max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="text-2xl font-bold gradient-text mb-4">
-                  Connect with Care
-                </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Your health journey is unique, and we're here to support you every step of the way. 
-                  Connect with healthcare providers who understand and care about your cervical health.
-                </p>
-                
-                <button className="group px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2">
-                  <Stethoscope className="w-5 h-5 group-hover:animate-pulse" />
-                  Find Healthcare Providers
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
-              
-              <div className="glass-card-light p-6 rounded-2xl">
-                <img 
-                  src="https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=400" 
-                  alt="Supportive healthcare consultation" 
-                  className="w-full h-48 object-cover rounded-xl mb-4"
-                />
-                <div className="text-center">
-                  <div className="text-sm font-medium text-gray-700 mb-1">Expert Support Available</div>
-                  <div className="text-xs text-gray-500">Compassionate care when you need it</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Gentle Disclaimer */}
         <div className="mt-16 text-center">
