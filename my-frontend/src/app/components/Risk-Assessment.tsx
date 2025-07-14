@@ -13,6 +13,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     patientNumber: '',
+    phoneNumber: '',
     age: '',
     region: '',
     ageFirstSex: '',
@@ -109,6 +110,17 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                   onChange={e => handleInputChange('patientNumber', e.target.value)}
                   className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
                   placeholder="Enter your patient number"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Phone Number</label>
+                <input
+                  type="tel"
+                  value={formData.phoneNumber}
+                  onChange={e => handleInputChange('phoneNumber', e.target.value)}
+                  className="w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300"
+                  placeholder="Enter your phone number"
                   required
                 />
               </div>
