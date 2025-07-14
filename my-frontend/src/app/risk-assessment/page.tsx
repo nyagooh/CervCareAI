@@ -4,6 +4,7 @@ import RiskAssessment from '../components/Risk-Assessment'
 import RiskProfile from '../components/RiskProfile'
 import Footer from '../components/footer'
 import React, { useState } from 'react';
+import DoctorTestResult from '../components/DoctorTestResult';
 
 export default function RiskAssessmentPage() {
   const [showProfile, setShowProfile] = useState(false);
@@ -14,6 +15,7 @@ export default function RiskAssessmentPage() {
       <Navbar />
       <RiskAssessment onShowProfile={() => setShowProfile(true)} setClientName={setClientName} />
       {showProfile && <RiskProfile clientName={clientName} />}
+      {showProfile && <DoctorTestResult patientId={clientName} />}
       <Footer />
     </div>
   )

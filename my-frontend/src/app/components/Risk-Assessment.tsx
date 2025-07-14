@@ -3,6 +3,8 @@
 import React, { useState, useRef } from 'react';
 import { ChevronRight, ChevronLeft, Heart, Calendar, Shield, Stethoscope, ArrowRight, CheckCircle, Lock } from 'lucide-react';
 import { useUser } from '../UserContext';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { auth } from './firebase';
 
 interface RiskAssessmentProps {
   onShowProfile: () => void;
@@ -29,6 +31,8 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
   const dashboardRef = useRef<HTMLDivElement>(null);
   const riskProfileRef = typeof window !== 'undefined' ? document.getElementById('risk-profile') : null;
   const { user } = useUser();
+  const db = getFirestore();
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -68,7 +72,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     }
   ];
 
-  const handleShowDashboard = () => {
+  const handleShowDashboard = async () => {
     setShowDashboard(true);
     // Prefer user's displayName, fallback to email, fallback to 'Client'
     const name = user?.displayName || user?.email || 'Client';
@@ -77,6 +81,17 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     setTimeout(() => {
       dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100); // slight delay to ensure render
+    // Save to Firestore
+    try {
+      await setDoc(doc(db, 'assessments', formData.patientNumber), {
+        ...formData,
+        createdAt: new Date(),
+        doctor: name,
+      });
+      setSaveStatus('success');
+    } catch (e) {
+      setSaveStatus('error');
+    }
   };
 
   const handleGoToRiskProfile = () => {
@@ -403,6 +418,12 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                     Back to Assessment
                   </button>
                 </div>
+                {showDashboard && saveStatus === 'success' && (
+                  <div className="mb-6 text-green-600 text-center font-semibold">Assessment data saved successfully.</div>
+                )}
+                {showDashboard && saveStatus === 'error' && (
+                  <div className="mb-6 text-red-600 text-center font-semibold">Error saving assessment data. Please try again.</div>
+                )}
               </div>
             ) : (
               renderStep()
