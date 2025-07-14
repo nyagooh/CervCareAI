@@ -81,7 +81,7 @@ const Navbar = () => {
                   aria-label="Open profile menu"
                 >
                   <img
-                    src={user.photoURL || '/default-profile.png'}
+                    src={user.photoURL || './defaultpic.jpg'}
                     alt="Profile"
                     className="w-10 h-10 rounded-full border-2 border-pink-400 shadow-sm object-cover bg-white"
                     style={{ objectFit: 'cover', objectPosition: 'center' }}
