@@ -144,33 +144,33 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
         return (
           <div className="space-y-8">
             <div className="text-center mb-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-rose-400/20 to-pink-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-rose-200/50">
-                <Heart className="w-8 h-8 text-rose-400 gentle-heartbeat" />
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-200/50">
+                <Heart className="w-8 h-8 text-purple-400 gentle-heartbeat" />
               </div>
               <h3 className="text-2xl font-bold gradient-text mb-3">Personal & Lifestyle</h3>
               <p className="text-gray-600">Tell us more about your background</p>
             </div>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-rose-500 mb-2">Age when you first had sex</label>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Age when you first had sex</label>
                 <input
                   type="number"
                   value={formData.ageFirstSex}
                   onChange={e => handleInputChange('ageFirstSex', e.target.value)}
-                  className="w-full p-3 border rounded-xl focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all duration-300"
+                  className="w-full p-3 border rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300"
                   placeholder="Enter age"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-rose-500 mb-2">Do you smoke?</label>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Do you smoke?</label>
                 <div className="flex gap-4">
                   {['Yes', 'No'].map(option => (
                     <button
                       key={option}
                       onClick={() => handleInputChange('smoking', option)}
                       className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
-                        formData.smoking === option ? 'border-rose-400 bg-rose-50 text-rose-600' : 'border-gray-200 bg-white hover:border-rose-200 hover:bg-rose-50/50 text-gray-600'
+                        formData.smoking === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
                       }`}
                     >
                       {option}
@@ -179,14 +179,14 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-rose-500 mb-2">Is your insurance covered?</label>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Is your insurance covered?</label>
                 <div className="flex gap-4">
                   {['Yes', 'No'].map(option => (
                     <button
                       key={option}
                       onClick={() => handleInputChange('insurance', option)}
                       className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
-                        formData.insurance === option ? 'border-rose-400 bg-rose-50 text-rose-600' : 'border-gray-200 bg-white hover:border-rose-200 hover:bg-rose-50/50 text-gray-600'
+                        formData.insurance === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
                       }`}
                     >
                       {option}
