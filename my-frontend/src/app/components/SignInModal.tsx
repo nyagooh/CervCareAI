@@ -3,9 +3,22 @@
 import React, { useState } from 'react';
 import { X, LogIn, Shield, Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { useUser } from '../UserContext';
 import { useRouter } from 'next/navigation';
+
+async function addDoctorToFirestore(user: any) {
+  if (!user) return;
+  const { uid, displayName, email, photoURL } = user;
+  const doctorRef = (await import('firebase/firestore')).doc(db, 'doctors', uid);
+  const setDoc = (await import('firebase/firestore')).setDoc;
+  await setDoc(doctorRef, {
+    name: displayName || '',
+    email: email,
+    photoURL: photoURL || '',
+    createdAt: new Date()
+  }, { merge: true });
+}
 
 const SignIn = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -23,9 +36,8 @@ const SignIn = () => {
     setSignInError('');
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      // User info is now in context via onAuthStateChanged
-      // if (!role) setShowRoleModal(true);
+      const result = await signInWithPopup(auth, provider);
+      await addDoctorToFirestore(result.user);
       router.push('/doctor-dashboard');
     } catch (error) {
       setSignInError('Google sign-in failed. Please try again.');
@@ -40,7 +52,8 @@ const SignIn = () => {
     setIsLoading(true);
     setSignInError('');
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      await addDoctorToFirestore(result.user);
       router.push('/doctor-dashboard');
     } catch (error) {
       setSignInError('Email sign-in failed. Please check your credentials.');
