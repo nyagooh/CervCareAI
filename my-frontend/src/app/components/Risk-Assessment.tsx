@@ -3,6 +3,8 @@
 import React, { useState, useRef } from 'react';
 import { ChevronRight, ChevronLeft, Heart, Calendar, Shield, Stethoscope, ArrowRight, CheckCircle, Lock } from 'lucide-react';
 import { useUser } from '../UserContext';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { auth } from './firebase';
 
 interface RiskAssessmentProps {
   onShowProfile: () => void;
@@ -12,17 +14,32 @@ interface RiskAssessmentProps {
 const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClientName }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
+    patientNumber: '',
+    phoneNumber: '',
     age: '',
-    lastScreening: '',
-    familyHistory: '',
-    lifestyle: '',
-    symptoms: '',
-    hpvVaccination: '',
+    region: '',
+    ageFirstSex: '',
+    smoking: '',
+    insurance: '',
+    hivStatus: '',
+    hpvTest: '',
+    papSmear: '',
+    stdsHistory: '',
+    lastScreeningType: '',
   });
   const [showDashboard, setShowDashboard] = useState(false);
   const dashboardRef = useRef<HTMLDivElement>(null);
   const riskProfileRef = typeof window !== 'undefined' ? document.getElementById('risk-profile') : null;
   const { user } = useUser();
+  const db = getFirestore();
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [touched, setTouched] = useState<{[key: string]: boolean}>({});
+  const [sectionError, setSectionError] = useState('');
+
+  // Phone validation (Kenyan format)
+  const isValidPhone = (phone: string) => {
+    return /^((\+254|0)7\d{8})$/.test(phone);
+  };
 
   const totalSteps = 3;
   const progress = (currentStep / totalSteps) * 100;
@@ -41,6 +58,31 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleNextStep = () => {
+    if (currentStep === 1 && !isStep1Valid) {
+      setSectionError('Please fill in all required fields with valid information.');
+      setTouched({
+        patientNumber: true,
+        phoneNumber: true,
+        age: true,
+        region: true,
+      });
+      return;
+    }
+    if (currentStep === 2 && !isStep2Valid) {
+      setSectionError('Please fill in all required fields with valid information.');
+      setTouched({
+        ageFirstSex: true,
+        smoking: true,
+        insurance: true,
+        hivStatus: true,
+      });
+      return;
+    }
+    setSectionError('');
+    nextStep();
   };
 
   // Dummy recommendation data
@@ -62,7 +104,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     }
   ];
 
-  const handleShowDashboard = () => {
+  const handleShowDashboard = async () => {
     setShowDashboard(true);
     // Prefer user's displayName, fallback to email, fallback to 'Client'
     const name = user?.displayName || user?.email || 'Client';
@@ -71,6 +113,17 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     setTimeout(() => {
       dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100); // slight delay to ensure render
+    // Save to Firestore
+    try {
+      await setDoc(doc(db, 'assessments', formData.patientNumber), {
+        ...formData,
+        createdAt: new Date(),
+        doctor: name,
+      });
+      setSaveStatus('success');
+    } catch (e) {
+      setSaveStatus('error');
+    }
   };
 
   const handleGoToRiskProfile = () => {
@@ -78,6 +131,27 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const regionOptions = [
+    'pumwani', 'kakamega', 'machakos', 'embu', 'mombasa', 'loitoktok', 'garisaa', 'kitale', 'moi', 'kericho'
+  ];
+
+  // Add this function for step 3 validation and warning
+  const handleGetReport = () => {
+    if (!isStep3Valid) {
+      setSectionError('Please fill in all required fields with valid information.');
+      setTouched(t => ({
+        ...t,
+        hpvTest: true,
+        papSmear: true,
+        stdsHistory: true,
+        lastScreeningType: true,
+      }));
+      return;
+    }
+    setSectionError('');
+    handleShowDashboard();
   };
 
   const renderStep = () => {
@@ -89,123 +163,149 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
               <div className="w-16 h-16 bg-gradient-to-r from-pink-400/20 to-rose-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-pink-200/50">
                 <Calendar className="w-8 h-8 text-pink-400" />
               </div>
-              <h3 className="text-2xl font-bold gradient-text mb-3">Basic Information</h3>
-              <p className="text-gray-600">Help us understand your health background</p>
+              <h3 className="text-2xl font-bold gradient-text mb-3">Patient Information</h3>
+              <p className="text-gray-600">Please enter the patient's demographic and contact details.</p>
             </div>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-pink-500 mb-3">What's your age range?</label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {['18-25', '26-35', '36-45', '46-55', '56-65', '65+'].map((age) => (
-                    <button
-                      key={age}
-                      onClick={() => handleInputChange('age', age)}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
-                        formData.age === age
-                          ? 'border-pink-400 bg-pink-50 text-pink-600'
-                          : 'border-gray-200 bg-white hover:border-pink-200 hover:bg-pink-50/50 text-gray-600'
-                      }`}
-                    >
-                      {age}
-                    </button>
-                  ))}
-                </div>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient ID</label>
+                <input
+                  type="text"
+                  value={formData.patientNumber}
+                  onChange={e => handleInputChange('patientNumber', e.target.value)}
+                  onBlur={() => setTouched(t => ({ ...t, patientNumber: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.patientNumber && !formData.patientNumber ? 'border-red-500' : ''}`}
+                  placeholder="Enter Patient ID"
+                  required
+                />
+                {touched.patientNumber && !formData.patientNumber && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
               </div>
               <div>
-                <label className="block text-sm font-semibold text-purple-500 mb-3">When was your last cervical screening?</label>
-                <div className="space-y-3">
-                  {[
-                    'Within the last year',
-                    '1-3 years ago',
-                    '3-5 years ago',
-                    'More than 5 years ago',
-                    'Never had screening'
-                  ].map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => handleInputChange('lastScreening', option)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
-                        formData.lastScreening === option
-                          ? 'border-purple-400 bg-purple-50 text-purple-600'
-                          : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border-2 ${
-                          formData.lastScreening === option
-                            ? 'border-purple-400 bg-purple-400'
-                            : 'border-gray-300'
-                        }`}>
-                          {formData.lastScreening === option && (
-                            <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
-                          )}
-                        </div>
-                        <span className="text-sm font-medium">{option}</span>
-                      </div>
-                    </button>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Phone Number</label>
+                <input
+                  type="tel"
+                  value={formData.phoneNumber}
+                  onChange={e => handleInputChange('phoneNumber', e.target.value)}
+                  onBlur={() => setTouched(t => ({ ...t, phoneNumber: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.phoneNumber && (!formData.phoneNumber || !isValidPhone(formData.phoneNumber)) ? 'border-red-500' : ''}`}
+                  placeholder="Enter phone number"
+                  required
+                />
+                {touched.phoneNumber && !formData.phoneNumber && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
+                {touched.phoneNumber && formData.phoneNumber && !isValidPhone(formData.phoneNumber) && (
+                  <p className="text-red-500 text-xs mt-1">Enter a valid Kenyan phone number (07XXXXXXXX or +2547XXXXXXXX)</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Age</label>
+                <input
+                  type="number"
+                  value={formData.age}
+                  onChange={e => handleInputChange('age', e.target.value)}
+                  onBlur={() => setTouched(t => ({ ...t, age: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.age && !formData.age ? 'border-red-500' : ''}`}
+                  placeholder="Enter age"
+                  required
+                />
+                {touched.age && !formData.age && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Region</label>
+                <select
+                  value={formData.region}
+                  onChange={e => handleInputChange('region', e.target.value)}
+                  onBlur={() => setTouched(t => ({ ...t, region: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.region && !formData.region ? 'border-red-500' : ''}`}
+                  required
+                >
+                  <option value="">Select region</option>
+                  {regionOptions.map(region => (
+                    <option key={region} value={region}>{region.charAt(0).toUpperCase() + region.slice(1)}</option>
                   ))}
-                </div>
+                </select>
+                {touched.region && !formData.region && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
               </div>
             </div>
+            {sectionError && (
+              <div className="text-red-500 text-sm mt-4 text-center">{sectionError}</div>
+            )}
           </div>
         );
       case 2:
         return (
           <div className="space-y-8">
             <div className="text-center mb-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-rose-400/20 to-pink-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-rose-200/50">
-                <Heart className="w-8 h-8 text-rose-400 gentle-heartbeat" />
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-200/50">
+                <Heart className="w-8 h-8 text-purple-400 gentle-heartbeat" />
               </div>
-              <h3 className="text-2xl font-bold gradient-text mb-3">Health History</h3>
-              <p className="text-gray-600">Your family history helps us provide better care</p>
+              <h3 className="text-2xl font-bold gradient-text mb-3">Personal & Lifestyle</h3>
+              <p className="text-gray-600">Provide relevant personal and lifestyle history for risk assessment.</p>
             </div>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-rose-500 mb-3">Family history of cervical or other cancers?</label>
-                <div className="space-y-3">
-                  {[
-                    'No family history',
-                    'Cervical cancer in family',
-                    'Other cancers in family',
-                    'Multiple cancers in family',
-                    'Not sure'
-                  ].map((option) => (
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Age when you first had sex</label>
+                <input
+                  type="number"
+                  value={formData.ageFirstSex}
+                  onChange={e => handleInputChange('ageFirstSex', e.target.value)}
+                  onBlur={() => setTouched(t => ({ ...t, ageFirstSex: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-purple-400 focus:ring-2 focus:ring-purple-100 transition-all duration-300 ${touched.ageFirstSex && !formData.ageFirstSex ? 'border-red-500' : ''}`}
+                  placeholder="Enter age"
+                  required
+                />
+                {touched.ageFirstSex && !formData.ageFirstSex && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Do you smoke?</label>
+                <div className="flex gap-4">
+                  {['Yes', 'No'].map(option => (
                     <button
                       key={option}
-                      onClick={() => handleInputChange('familyHistory', option)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
-                        formData.familyHistory === option
-                          ? 'border-rose-400 bg-rose-50 text-rose-600'
-                          : 'border-gray-200 bg-white hover:border-rose-200 hover:bg-rose-50/50 text-gray-600'
+                      onClick={() => handleInputChange('smoking', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.smoking === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border-2 ${
-                          formData.familyHistory === option
-                            ? 'border-rose-400 bg-rose-400'
-                            : 'border-gray-300'
-                        }`}>
-                          {formData.familyHistory === option && (
-                            <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
-                          )}
-                        </div>
-                        <span className="text-sm font-medium">{option}</span>
-                      </div>
+                      {option}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-cyan-500 mb-3">Have you received the HPV vaccination?</label>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {['Yes, fully vaccinated', 'Partially vaccinated', 'No vaccination'].map((option) => (
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Is your insurance covered?</label>
+                <div className="flex gap-4">
+                  {['Yes', 'No'].map(option => (
                     <button
                       key={option}
-                      onClick={() => handleInputChange('hpvVaccination', option)}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
-                        formData.hpvVaccination === option
-                          ? 'border-cyan-400 bg-cyan-50 text-cyan-600'
-                          : 'border-gray-200 bg-white hover:border-cyan-200 hover:bg-cyan-50/50 text-gray-600'
+                      onClick={() => handleInputChange('insurance', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.insurance === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">HIV Status</label>
+                <div className="flex gap-4">
+                  {['Positive', 'Negative'].map(option => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('hivStatus', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.hivStatus === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
                       }`}
                     >
                       {option}
@@ -214,6 +314,9 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 </div>
               </div>
             </div>
+            {sectionError && (
+              <div className="text-red-500 text-sm mt-4 text-center">{sectionError}</div>
+            )}
           </div>
         );
       case 3:
@@ -223,89 +326,78 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
               <div className="w-16 h-16 bg-gradient-to-r from-purple-400/20 to-cyan-400/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-200/50">
                 <Stethoscope className="w-8 h-8 text-purple-400" />
               </div>
-              <h3 className="text-2xl font-bold gradient-text mb-3">Lifestyle & Symptoms</h3>
-              <p className="text-gray-600">Final questions to complete your health profile</p>
+              <h3 className="text-2xl font-bold gradient-text mb-3">Screening & Medical History</h3>
+              <p className="text-gray-600">Document the patient's screening results and medical history.</p>
             </div>
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-purple-500 mb-3">Lifestyle factors (select all that apply)</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {[
-                    'Non-smoker',
-                    'Current smoker',
-                    'Former smoker',
-                    'Regular exercise',
-                    'Healthy diet',
-                    'Stress management'
-                  ].map((option) => (
+                <label className="block text-sm font-semibold text-purple-500 mb-2">HPV Test Results</label>
+                <div className="flex gap-4">
+                  {['Positive', 'Negative', 'Never had one'].map(option => (
                     <button
                       key={option}
-                      onClick={() => {
-                        const current = formData.lifestyle.split(',').filter(Boolean);
-                        const updated = current.includes(option)
-                          ? current.filter(item => item !== option)
-                          : [...current, option];
-                        handleInputChange('lifestyle', updated.join(','));
-                      }}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
-                        formData.lifestyle.includes(option)
-                          ? 'border-purple-400 bg-purple-50 text-purple-600'
-                          : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
+                      onClick={() => handleInputChange('hpvTest', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.hpvTest === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded border-2 ${
-                          formData.lifestyle.includes(option)
-                            ? 'border-purple-400 bg-purple-400'
-                            : 'border-gray-300'
-                        }`}>
-                          {formData.lifestyle.includes(option) && (
-                            <CheckCircle className="w-3 h-3 text-white" />
-                          )}
-                        </div>
-                        <span>{option}</span>
-                      </div>
+                      {option}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-pink-500 mb-3">Any concerning symptoms? (optional)</label>
-                <div className="space-y-3">
-                  {[
-                    'No symptoms',
-                    'Unusual bleeding',
-                    'Pelvic pain',
-                    'Unusual discharge',
-                    'Pain during intimacy',
-                    'Other concerns'
-                  ].map((option) => (
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Pap Smear Result</label>
+                <div className="flex gap-4">
+                  {['Positive', 'Negative', 'Never had one'].map(option => (
                     <button
                       key={option}
-                      onClick={() => handleInputChange('symptoms', option)}
-                      className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${
-                        formData.symptoms === option
-                          ? 'border-pink-400 bg-pink-50 text-pink-600'
-                          : 'border-gray-200 bg-white hover:border-pink-200 hover:bg-pink-50/50 text-gray-600'
+                      onClick={() => handleInputChange('papSmear', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.papSmear === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-4 h-4 rounded-full border-2 ${
-                          formData.symptoms === option
-                            ? 'border-pink-400 bg-pink-400'
-                            : 'border-gray-300'
-                        }`}>
-                          {formData.symptoms === option && (
-                            <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
-                          )}
-                        </div>
-                        <span className="text-sm font-medium">{option}</span>
-                      </div>
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">STDs History</label>
+                <div className="flex gap-4">
+                  {['Yes', 'No'].map(option => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('stdsHistory', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.stdsHistory === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-purple-500 mb-2">Last Screening Type</label>
+                <div className="flex gap-4">
+                  {['Pap smear', 'HPV DNA'].map(option => (
+                    <button
+                      key={option}
+                      onClick={() => handleInputChange('lastScreeningType', option)}
+                      className={`px-6 py-3 rounded-xl border-2 transition-all duration-300 text-sm font-medium ${
+                        formData.lastScreeningType === option ? 'border-purple-400 bg-purple-50 text-purple-600' : 'border-gray-200 bg-white hover:border-purple-200 hover:bg-purple-50/50 text-gray-600'
+                      }`}
+                    >
+                      {option}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
+            {sectionError && (
+              <div className="text-red-500 text-sm mt-4 text-center">{sectionError}</div>
+            )}
           </div>
         );
       default:
@@ -313,6 +405,9 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     }
   };
 
+  const isStep1Valid = formData.patientNumber && isValidPhone(formData.phoneNumber) && formData.age && formData.region;
+  const isStep2Valid = formData.ageFirstSex && formData.smoking && formData.insurance && formData.hivStatus;
+  const isStep3Valid = formData.hpvTest && formData.papSmear && formData.stdsHistory && formData.lastScreeningType;
 
   return (
     <section id="risk-assessment" className="py-20 px-6 relative bg-gradient-to-br from-purple-50 via-rose-50 to-pink-50">
@@ -407,6 +502,12 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                     Back to Assessment
                   </button>
                 </div>
+                {showDashboard && saveStatus === 'success' && (
+                  <div className="mb-6 text-green-600 text-center font-semibold">Assessment data saved successfully.</div>
+                )}
+                {showDashboard && saveStatus === 'error' && (
+                  <div className="mb-6 text-red-600 text-center font-semibold">Error saving assessment data. Please try again.</div>
+                )}
               </div>
             ) : (
               renderStep()
@@ -430,21 +531,21 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
             {currentStep === totalSteps && !showDashboard ? (
               <button
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
-                onClick={handleShowDashboard}
+                onClick={handleGetReport}
               >
                 <Shield className="w-5 h-5 group-hover:animate-pulse" />
-                Get My Health Report
+                Get Report
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            ) : !showDashboard ? (
+            ) : (
               <button
-                onClick={nextStep}
+                onClick={handleNextStep}
                 className="group px-8 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full hover:shadow-xl hover:shadow-pink-300/50 transition-all duration-300 flex items-center gap-2"
               >
                 Continue
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
-            ) : null}
+            )}
           </div>
         </div>
 

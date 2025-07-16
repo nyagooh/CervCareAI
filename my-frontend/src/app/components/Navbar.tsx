@@ -4,7 +4,7 @@ import { Heart, Menu, X, Shield, Brain, Stethoscope, LogIn } from 'lucide-react'
 import { useUser } from '../UserContext';
 import { signOut } from 'firebase/auth';
 import { auth } from './firebase';
-
+import { useRouter } from 'next/navigation';
 
 
 const Navbar = () => {
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, role, setRole } = useUser();
+  const router = useRouter();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -76,15 +77,22 @@ const Navbar = () => {
             {user ? (
               <div className="relative">
                 <button
-                  onClick={() => setDropdownOpen((open) => !open)}
+                  onClick={() => {
+                    setDropdownOpen((open) => !open);
+                  }}
                   className="focus:outline-none flex items-center"
                   aria-label="Open profile menu"
                 >
                   <img
                     src={user.photoURL || './defaultpic.jpg'}
                     alt="Profile"
-                    className="w-10 h-10 rounded-full border-2 border-pink-400 shadow-sm object-cover bg-white"
+                    className="w-10 h-10 rounded-full border-2 border-pink-400 shadow-sm object-cover bg-white cursor-pointer"
                     style={{ objectFit: 'cover', objectPosition: 'center' }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push('/doctor-dashboard');
+                      setDropdownOpen(false);
+                    }}
                   />
                 </button>
                 {dropdownOpen && (
@@ -96,7 +104,7 @@ const Navbar = () => {
                       {role || 'No role'}
                     </div>
                     <hr className="my-1" />
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 rounded-xl">Profile</a>
+                    <a href="/doctor-dashboard" onClick={(e) => { e.preventDefault(); router.push('/doctor-dashboard'); setDropdownOpen(false); }} className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 rounded-xl">Profile</a>
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-pink-50 rounded-xl"
