@@ -1,10 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useUser } from '../UserContext';
 import { Calendar, FileText, BarChart3, Users, Heart, Stethoscope, X } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip, Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
+import dynamic from 'next/dynamic';
+const DoctorCharts = dynamic(() => import('./DoctorCharts'), { ssr: false });
+// import PieChart from 'recharts/PieChart';
+// import Pie from 'recharts/Pie';
+// import Cell from 'recharts/Cell';
+// import Tooltip from 'recharts/Tooltip';
+// import Bar from 'recharts/Bar';
+// import BarChart from 'recharts/BarChart';
+// import XAxis from 'recharts/XAxis';
+// import YAxis from 'recharts/YAxis';
+// import CartesianGrid from 'recharts/CartesianGrid';
+// import ResponsiveContainer from 'recharts/ResponsiveContainer';
+// import Legend from 'recharts/Legend';
 
 const COLORS = ['#ec4899', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#f87171', '#38bdf8'];
 
@@ -19,12 +32,22 @@ const DoctorDashboard = () => {
     const fetchAssessments = async () => {
       if (!user) return;
       setLoading(true);
-      const db = getFirestore();
-      const doctorName = user.displayName || user.email || 'Client';
-      const q = query(collection(db, 'assessments'), where('doctor', '==', doctorName));
+      const q = query(collection(db, 'patients'), where('doctorId', '==', user.uid));
       const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setAssessments(data);
+      // Flatten assessments from all patients
+      let allAssessments: any[] = [];
+      querySnapshot.docs.forEach(docSnap => {
+        const patient = docSnap.data();
+        if (Array.isArray(patient.assessments)) {
+          patient.assessments.forEach((assessment: any) => {
+            allAssessments.push({ ...assessment, patientNumber: docSnap.id, ...patient });
+          });
+        } else {
+          // If no assessments array, treat patient doc as a single assessment
+          allAssessments.push({ patientNumber: docSnap.id, ...patient });
+        }
+      });
+      setAssessments(allAssessments);
       setLoading(false);
     };
     fetchAssessments();
@@ -112,34 +135,7 @@ const DoctorDashboard = () => {
             <div className="text-gray-600">Negative Results</div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-bold mb-4 gradient-text">Results by Region</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie data={regionData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                  {regionData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-bold mb-4 gradient-text">Assessments Over Time</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={dateData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#a78bfa" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <DoctorCharts regionData={regionData} dateData={dateData} />
 
         {/* Patient List */}
         <div className="glass-card p-8 mb-12">
@@ -197,7 +193,7 @@ const DoctorDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedPatient.assessments.map((a, idx) => (
+                    {selectedPatient.assessments.map((a: any, idx: number) => (
                       <tr key={a.id || idx} className="hover:bg-pink-50">
                         <td className="px-4 py-2 text-sm">{a.createdAt?.toDate ? a.createdAt.toDate().toLocaleDateString() : ''}</td>
                         <td className="px-4 py-2 text-sm">{a.hpvTest}</td>
