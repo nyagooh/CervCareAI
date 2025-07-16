@@ -88,11 +88,6 @@ const Navbar = () => {
                     alt="Profile"
                     className="w-10 h-10 rounded-full border-2 border-pink-400 shadow-sm object-cover bg-white cursor-pointer"
                     style={{ objectFit: 'cover', objectPosition: 'center' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push('/doctor-dashboard');
-                      setDropdownOpen(false);
-                    }}
                   />
                 </button>
                 {dropdownOpen && (
