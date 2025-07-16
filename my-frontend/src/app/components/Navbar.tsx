@@ -34,6 +34,7 @@ const Navbar = () => {
     await signOut(auth);
     setRole(null);
     setDropdownOpen(false);
+    router.push('/');
   };
 
   return (
