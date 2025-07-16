@@ -70,10 +70,7 @@ const DoctorDashboard = () => {
 
   if (!user || role !== 'doctor') {
     return (
-      <div className="max-w-2xl mx-auto mt-20 p-8 bg-white rounded-2xl shadow-lg border border-pink-100 text-center">
-        <h2 className="text-2xl font-bold text-pink-600 mb-4">Doctor Dashboard</h2>
-        <p className="text-gray-600">You must be signed in as a doctor to view this dashboard.</p>
-      </div>
+      <></>
     );
   }
 
