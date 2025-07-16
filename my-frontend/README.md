@@ -39,6 +39,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 ## to do today
 - fix doctors profile with pple who have done test there.have a report and anylytics dahsboard.can see past patients data
 - have a data bse on the code base to store recent patients data
+- profile comes first then recommendation
 - send screening reminders to patients use their number in the databasa
 - remove word ai from the site 
 - intergrate a chatbot for doctors make sure it speaks too
