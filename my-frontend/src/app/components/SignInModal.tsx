@@ -13,7 +13,7 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
-  const { user, role, setRole } = useUser();
+  // const { user, role, setRole } = useUser();
   const [showRoleModal, setShowRoleModal] = useState(false);
 
   const handleGoogleSignIn = async () => {
@@ -22,7 +22,7 @@ const SignIn = () => {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       // User info is now in context via onAuthStateChanged
-      if (!role) setShowRoleModal(true);
+      // if (!role) setShowRoleModal(true);
     } catch (error) {
       console.error('Google sign-in error:', error);
     } finally {
