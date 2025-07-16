@@ -9,10 +9,10 @@ import { PieChart, Pie, Cell, Tooltip, Bar, BarChart, XAxis, YAxis, CartesianGri
 const COLORS = ['#ec4899', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#f87171', '#38bdf8'];
 
 const DoctorDashboard = () => {
-  const { user, role } = useUser();
-  const [assessments, setAssessments] = useState([]);
+  const { user } = useUser();
+  const [assessments, setAssessments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const DoctorDashboard = () => {
   }, [user]);
 
   // Group assessments by patientNumber
-  const patients = {};
+  const patients: Record<string, any[]> = {};
   assessments.forEach(a => {
     if (!patients[a.patientNumber]) patients[a.patientNumber] = [];
     patients[a.patientNumber].push(a);
@@ -47,15 +47,17 @@ const DoctorDashboard = () => {
   // Analytics data
   const positiveCount = assessments.filter(a => a.hpvTest === 'Positive' || a.papSmear === 'Positive').length;
   const negativeCount = assessments.filter(a => a.hpvTest === 'Negative' && a.papSmear === 'Negative').length;
-  const regionCounts = {};
+  const regionCounts: Record<string, number> = {};
   assessments.forEach(a => {
-    if (!regionCounts[a.region]) regionCounts[a.region] = 0;
-    regionCounts[a.region]++;
+    if (a.region) {
+      if (!regionCounts[a.region]) regionCounts[a.region] = 0;
+      regionCounts[a.region]++;
+    }
   });
   const regionData = Object.keys(regionCounts).map(region => ({ name: region, value: regionCounts[region] }));
 
   // Assessments over time (by date)
-  const dateCounts = {};
+  const dateCounts: Record<string, number> = {};
   assessments.forEach(a => {
     let dateStr = '';
     if (a.createdAt?.toDate) {
@@ -63,15 +65,16 @@ const DoctorDashboard = () => {
     } else if (a.createdAt) {
       dateStr = new Date(a.createdAt).toLocaleDateString();
     }
-    if (!dateCounts[dateStr]) dateCounts[dateStr] = 0;
-    dateCounts[dateStr]++;
+    if (dateStr) {
+      if (!dateCounts[dateStr]) dateCounts[dateStr] = 0;
+      dateCounts[dateStr]++;
+    }
   });
   const dateData = Object.keys(dateCounts).map(date => ({ date, count: dateCounts[date] }));
 
-  if (!user || role !== 'doctor') {
-    return (
-      <></>
-    );
+  // Remove role check, just check for user
+  if (!user) {
+    return <></>;
   }
 
   return (
