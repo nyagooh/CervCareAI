@@ -5,6 +5,8 @@ import { ChevronRight, ChevronLeft, Heart, Calendar, Shield, Stethoscope, ArrowR
 import { useUser } from '../UserContext';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { auth } from './firebase';
+import { setLocalPatients, getLocalPatients, Patient, Assessment } from './localDatabase';
+import { useRouter } from 'next/navigation';
 
 interface RiskAssessmentProps {
   onShowProfile: () => void;
@@ -35,6 +37,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [touched, setTouched] = useState<{[key: string]: boolean}>({});
   const [sectionError, setSectionError] = useState('');
+  const router = useRouter();
 
   // Phone validation (Kenyan format)
   const isValidPhone = (phone: string) => {
@@ -106,21 +109,42 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
 
   const handleShowDashboard = async () => {
     setShowDashboard(true);
-    // Prefer user's displayName, fallback to email, fallback to 'Client'
     const name = user?.displayName || user?.email || 'Client';
     setClientName(name);
     onShowProfile();
     setTimeout(() => {
       dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100); // slight delay to ensure render
-    // Save to Firestore
+    }, 100);
+    // Save to local database instead of Firestore
     try {
-      await setDoc(doc(db, 'assessments', formData.patientNumber), {
-        ...formData,
-        createdAt: new Date(),
-        doctor: name,
-      });
+      const patients = getLocalPatients();
+      // Check if patient already exists by patientNumber
+      let patient = patients.find(p => p.id === formData.patientNumber);
+      const newAssessment: Assessment = {
+        id: `assess${Date.now()}`,
+        date: new Date().toLocaleDateString(),
+        result: (formData.hpvTest === 'Positive' || formData.papSmear === 'Positive') ? 'positive' : 'negative',
+        notes: '',
+      };
+      if (patient) {
+        // Add assessment to existing patient
+        patient.assessments.push(newAssessment);
+      } else {
+        // Add new patient
+        const newPatient: Patient = {
+          id: formData.patientNumber,
+          doctorId: user?.email || 'doc1',
+          name: formData.patientNumber,
+          age: Number(formData.age),
+          region: formData.region,
+          assessments: [newAssessment],
+        };
+        patients.push(newPatient);
+      }
+      setLocalPatients(patients);
       setSaveStatus('success');
+      // Redirect to dashboard
+      router.push('/doctor-dashboard');
     } catch (e) {
       setSaveStatus('error');
     }
