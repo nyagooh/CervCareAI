@@ -13,25 +13,36 @@ const COLORS = ['#ec4899', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#60a5fa'
 const DoctorDashboard = () => {
   const { user } = useUser();
   const router = useRouter();
-  // Find the current doctor (for demo, match by email)
-  const doctor = doctors.find(d => d.email === user?.email) || doctors[0];
+  const doctorId = user?.email;
+  // Debug logs
+  console.log('Current user:', user);
+  console.log('Current doctorId:', doctorId);
   // State for patients (filtered by doctor)
-  const [patientList, setPatientList] = useState<Patient[]>(() => getLocalPatients().filter(p => p.doctorId === doctor.id));
+  const [patientList, setPatientList] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
 
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-    localStorage.removeItem('localPatients');
-  }
-
-  // Keep patients in sync with localStorage
+  // Only clear localStorage once on mount in development
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      localStorage.removeItem('localPatients');
+    }
+  }, []);
+
+  // Load and filter patients by doctorId
+  useEffect(() => {
+    if (!doctorId) return;
     const sync = () => {
-      setPatientList(getLocalPatients().filter(p => p.doctorId === doctor.id));
+      const allPatients = getLocalPatients();
+      console.log('All patients in localStorage:', allPatients);
+      const filtered = allPatients.filter(p => p.doctorId === doctorId);
+      console.log('Filtered patients for doctorId', doctorId, ':', filtered);
+      setPatientList(filtered);
     };
+    sync();
     window.addEventListener('storage', sync);
     return () => window.removeEventListener('storage', sync);
-  }, [doctor.id]);
+  }, [doctorId, user]);
 
   // Flatten all assessments for analytics
   const assessments = patientList.flatMap(p => p.assessments.map(a => ({ ...a, patientName: p.name, age: p.age, region: p.region })));
@@ -74,7 +85,7 @@ const DoctorDashboard = () => {
             className="w-20 h-20 rounded-full border-2 border-pink-400 object-cover"
           />
           <div>
-            <h2 className="text-2xl font-bold text-pink-600">{user.displayName || doctor.name}</h2>
+            <h2 className="text-2xl font-bold text-pink-600">{user.displayName || doctors.find(d => d.email === user?.email)?.name}</h2>
             <p className="text-gray-600">{user.email}</p>
             <span className="inline-block mt-2 px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-bold">Doctor</span>
           </div>
