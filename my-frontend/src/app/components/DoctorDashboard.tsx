@@ -20,6 +20,10 @@ const DoctorDashboard = () => {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
 
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    localStorage.removeItem('localPatients');
+  }
+
   // Keep patients in sync with localStorage
   useEffect(() => {
     const sync = () => {
@@ -80,17 +84,17 @@ const DoctorDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <div className="glass-card p-6 flex flex-col items-center">
             <Users className="w-8 h-8 text-pink-400 mb-2" />
-            <div className="text-2xl font-bold">{assessments.length}</div>
+            <div className="text-2xl font-bold">{assessments.length > 0 ? assessments.length : 'No tests done'}</div>
             <div className="text-gray-600">Total Assessments</div>
           </div>
           <div className="glass-card p-6 flex flex-col items-center">
             <FileText className="w-8 h-8 text-purple-400 mb-2" />
-            <div className="text-2xl font-bold">{positiveCount}</div>
+            <div className="text-2xl font-bold">{assessments.length > 0 ? positiveCount : 'No tests done'}</div>
             <div className="text-gray-600">Positive Results</div>
           </div>
           <div className="glass-card p-6 flex flex-col items-center">
             <Heart className="w-8 h-8 text-rose-400 mb-2" />
-            <div className="text-2xl font-bold">{negativeCount}</div>
+            <div className="text-2xl font-bold">{assessments.length > 0 ? negativeCount : 'No tests done'}</div>
             <div className="text-gray-600">Negative Results</div>
           </div>
         </div>
@@ -100,7 +104,7 @@ const DoctorDashboard = () => {
         <div className="mb-6 flex justify-end">
           <button
             className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold"
-            onClick={() => router.push('/assessment-form')}
+            onClick={() => router.push('/risk-assessment')}
           >
             + Add Patient
           </button>
