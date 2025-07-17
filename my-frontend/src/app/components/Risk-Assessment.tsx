@@ -17,6 +17,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     patientNumber: '',
+    patientName: '', // NEW FIELD
     phoneNumber: '',
     age: '',
     region: '',
@@ -38,6 +39,10 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
   const [touched, setTouched] = useState<{[key: string]: boolean}>({});
   const [sectionError, setSectionError] = useState('');
   const router = useRouter();
+
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    localStorage.removeItem('localPatients');
+  }
 
   // Phone validation (Kenyan format)
   const isValidPhone = (phone: string) => {
@@ -134,7 +139,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
         const newPatient: Patient = {
           id: formData.patientNumber,
           doctorId: user?.email || 'doc1',
-          name: formData.patientNumber,
+          name: formData.patientName, // Use the entered name
           age: Number(formData.age),
           region: formData.region,
           assessments: [newAssessment],
@@ -191,6 +196,21 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
               <p className="text-gray-600">Please enter the patient's demographic and contact details.</p>
             </div>
             <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-pink-500 mb-2">Patient Name</label>
+                <input
+                  type="text"
+                  value={formData.patientName}
+                  onChange={e => handleInputChange('patientName', e.target.value)}
+                  onBlur={() => setTouched(t => ({ ...t, patientName: true }))}
+                  className={`w-full p-3 border rounded-xl focus:border-pink-400 focus:ring-2 focus:ring-pink-100 transition-all duration-300 ${touched.patientName && !formData.patientName ? 'border-red-500' : ''}`}
+                  placeholder="Enter Patient Name"
+                  required
+                />
+                {touched.patientName && !formData.patientName && (
+                  <p className="text-red-500 text-xs mt-1">Please fill this field.</p>
+                )}
+              </div>
               <div>
                 <label className="block text-sm font-semibold text-pink-500 mb-2">Patient ID</label>
                 <input
@@ -429,7 +449,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
     }
   };
 
-  const isStep1Valid = formData.patientNumber && isValidPhone(formData.phoneNumber) && formData.age && formData.region;
+  const isStep1Valid = formData.patientName && formData.patientNumber && isValidPhone(formData.phoneNumber) && formData.age && formData.region;
   const isStep2Valid = formData.ageFirstSex && formData.smoking && formData.insurance && formData.hivStatus;
   const isStep3Valid = formData.hpvTest && formData.papSmear && formData.stdsHistory && formData.lastScreeningType;
 
