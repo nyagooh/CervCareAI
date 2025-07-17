@@ -4,21 +4,30 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '../UserContext';
 import dynamic from 'next/dynamic';
 import { Calendar, FileText, BarChart3, Users, Heart, Stethoscope, X } from 'lucide-react';
-import { doctors, patients as initialPatients, Doctor, Patient, Assessment } from './localDatabase';
+import { doctors, getLocalPatients, Doctor, Patient, Assessment } from './localDatabase';
+import { useRouter } from 'next/navigation';
 const DoctorCharts = dynamic(() => import('./DoctorCharts'), { ssr: false });
 
 const COLORS = ['#ec4899', '#a78bfa', '#f472b6', '#fbbf24', '#34d399', '#60a5fa', '#f87171', '#38bdf8'];
 
 const DoctorDashboard = () => {
   const { user } = useUser();
+  const router = useRouter();
   // Find the current doctor (for demo, match by email)
   const doctor = doctors.find(d => d.email === user?.email) || doctors[0];
   // State for patients (filtered by doctor)
-  const [patientList, setPatientList] = useState<Patient[]>(() => initialPatients.filter(p => p.doctorId === doctor.id));
+  const [patientList, setPatientList] = useState<Patient[]>(() => getLocalPatients().filter(p => p.doctorId === doctor.id));
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
-  const [showAddPatient, setShowAddPatient] = useState(false);
-  const [newPatient, setNewPatient] = useState({ name: '', age: '', region: '' });
+
+  // Keep patients in sync with localStorage
+  useEffect(() => {
+    const sync = () => {
+      setPatientList(getLocalPatients().filter(p => p.doctorId === doctor.id));
+    };
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, [doctor.id]);
 
   // Flatten all assessments for analytics
   const assessments = patientList.flatMap(p => p.assessments.map(a => ({ ...a, patientName: p.name, age: p.age, region: p.region })));
@@ -49,23 +58,6 @@ const DoctorDashboard = () => {
   if (!user) {
     return <></>;
   }
-
-  // Add new patient handler
-  const handleAddPatient = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPatient.name || !newPatient.age || !newPatient.region) return;
-    const newPat: Patient = {
-      id: `pat${Date.now()}`,
-      doctorId: doctor.id,
-      name: newPatient.name,
-      age: Number(newPatient.age),
-      region: newPatient.region,
-      assessments: [],
-    };
-    setPatientList(prev => [...prev, newPat]);
-    setShowAddPatient(false);
-    setNewPatient({ name: '', age: '', region: '' });
-  };
 
   return (
     <section className="py-20 px-6 relative bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 min-h-screen">
@@ -106,26 +98,13 @@ const DoctorDashboard = () => {
 
         {/* Add Patient Button */}
         <div className="mb-6 flex justify-end">
-          <button className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold" onClick={() => setShowAddPatient(true)}>
+          <button
+            className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold"
+            onClick={() => router.push('/assessment-form')}
+          >
             + Add Patient
           </button>
         </div>
-
-        {/* Add Patient Modal */}
-        {showAddPatient && (
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full relative">
-              <button className="absolute top-2 right-2 text-gray-400 hover:text-pink-500" onClick={() => setShowAddPatient(false)}><X /></button>
-              <h3 className="text-xl font-bold mb-4 text-pink-600">Add New Patient</h3>
-              <form onSubmit={handleAddPatient} className="space-y-4">
-                <input type="text" placeholder="Name" className="w-full border rounded px-3 py-2" value={newPatient.name} onChange={e => setNewPatient(p => ({ ...p, name: e.target.value }))} required />
-                <input type="number" placeholder="Age" className="w-full border rounded px-3 py-2" value={newPatient.age} onChange={e => setNewPatient(p => ({ ...p, age: e.target.value }))} required />
-                <input type="text" placeholder="Region" className="w-full border rounded px-3 py-2" value={newPatient.region} onChange={e => setNewPatient(p => ({ ...p, region: e.target.value }))} required />
-                <button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg font-semibold w-full">Add Patient</button>
-              </form>
-            </div>
-          </div>
-        )}
 
         {/* Patient List */}
         <div className="glass-card p-8 mb-12">
