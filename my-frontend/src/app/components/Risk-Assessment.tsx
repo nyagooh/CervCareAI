@@ -147,6 +147,7 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
         patients.push(newPatient);
       }
       setLocalPatients(patients);
+      console.log('Saved patients to localStorage:', getLocalPatients());
       setSaveStatus('success');
       // Redirect to dashboard
       router.push('/doctor-dashboard');
