@@ -46,4 +46,25 @@ export const patients: Patient[] = [
       },
     ],
   },
-]; 
+];
+
+export const LOCAL_PATIENTS_KEY = 'localPatients';
+
+export function getLocalPatients(): Patient[] {
+  if (typeof window === 'undefined') return patients;
+  const stored = localStorage.getItem(LOCAL_PATIENTS_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return patients;
+    }
+  }
+  return patients;
+}
+
+export function setLocalPatients(newPatients: Patient[]) {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(LOCAL_PATIENTS_KEY, JSON.stringify(newPatients));
+  }
+} 
