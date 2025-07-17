@@ -30,37 +30,19 @@ export const doctors: Doctor[] = [
   },
 ];
 
-export const patients: Patient[] = [
-  {
-    id: "pat1",
-    doctorId: "doc1",
-    name: "Alice Johnson",
-    age: 32,
-    region: "Nairobi",
-    assessments: [
-      {
-        id: "assess1",
-        date: "2024-06-01",
-        result: "positive",
-        notes: "Initial assessment",
-      },
-    ],
-  },
-];
-
 export const LOCAL_PATIENTS_KEY = 'localPatients';
 
 export function getLocalPatients(): Patient[] {
-  if (typeof window === 'undefined') return patients;
+  if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem(LOCAL_PATIENTS_KEY);
   if (stored) {
     try {
       return JSON.parse(stored);
     } catch {
-      return patients;
+      return [];
     }
   }
-  return patients;
+  return [];
 }
 
 export function setLocalPatients(newPatients: Patient[]) {
