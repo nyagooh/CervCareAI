@@ -39,6 +39,8 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
   const [touched, setTouched] = useState<{[key: string]: boolean}>({});
   const [sectionError, setSectionError] = useState('');
   const router = useRouter();
+  const [showSummary, setShowSummary] = useState(false); // NEW: controls post-submit summary
+  const [lastAssessmentResult, setLastAssessmentResult] = useState<'positive' | 'negative' | null>(null); // NEW: for summary
 
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     localStorage.removeItem('localPatients');
@@ -181,8 +183,65 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
       return;
     }
     setSectionError('');
-    handleShowDashboard();
+    handleSaveAssessment();
   };
+
+  // Replace handleShowDashboard with handleSaveAssessment
+  const handleSaveAssessment = async () => {
+    // Save to local database instead of Firestore
+    try {
+      const patients = getLocalPatients();
+      // Check if patient already exists by patientNumber
+      let patient = patients.find(p => p.id === formData.patientNumber);
+      const result = (formData.hpvTest === 'Positive' || formData.papSmear === 'Positive') ? 'positive' : 'negative';
+      const newAssessment: Assessment = {
+        id: `assess${Date.now()}`,
+        date: new Date().toLocaleDateString(),
+        result,
+        notes: '',
+      };
+      if (patient) {
+        // Add assessment to existing patient
+        patient.assessments.push(newAssessment);
+      } else {
+        // Add new patient
+        const newPatient: Patient = {
+          id: formData.patientNumber,
+          doctorId: user?.email || 'doc1',
+          name: formData.patientName, // Use the entered name
+          age: Number(formData.age),
+          region: formData.region,
+          assessments: [newAssessment],
+        };
+        patients.push(newPatient);
+      }
+      setLocalPatients(patients);
+      setSaveStatus('success');
+      setLastAssessmentResult(result); // Save result for summary
+      setShowSummary(true); // Show summary instead of redirecting
+    } catch (e) {
+      setSaveStatus('error');
+    }
+  };
+
+  // Add patient summary card component
+  const PatientSummaryCard = () => (
+    <div className="p-6 rounded-xl border-2 border-pink-200 bg-white shadow-sm mb-8">
+      <div className="flex items-center gap-4 mb-2">
+        <Heart className="w-8 h-8 text-pink-400" />
+        <div>
+          <div className="text-lg font-bold text-gray-800">{formData.patientName}</div>
+          <div className="text-sm text-gray-500">ID: {formData.patientNumber}</div>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-6 mt-2">
+        <div className="text-sm"><span className="font-semibold text-pink-500">Age:</span> {formData.age}</div>
+        <div className="text-sm"><span className="font-semibold text-pink-500">Region:</span> {formData.region}</div>
+        <div className="text-sm"><span className="font-semibold text-pink-500">Phone:</span> {formData.phoneNumber}</div>
+        <div className="text-sm"><span className="font-semibold text-pink-500">Assessment Result:</span> <span className={lastAssessmentResult === 'positive' ? 'text-rose-600 font-bold' : 'text-green-600 font-bold'}>{lastAssessmentResult === 'positive' ? 'Positive' : 'Negative'}</span></div>
+      </div>
+    </div>
+  );
 
   const renderStep = () => {
     switch (currentStep) {
@@ -518,9 +577,11 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 <p className="text-gray-600 mb-6">Please sign in or create an account to view and download your assessment results and risk profile dashboard.</p>
                 <a href="/signup" className="px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300">Sign In / Create Account</a>
               </div>
-            ) : showDashboard ? (
-              <div ref={dashboardRef} className="mt-8">
-                <h3 className="text-2xl font-bold mb-4 text-center text-pink-600">Personalized Screening Recommendations</h3>
+            ) : showSummary ? (
+              <div className="mt-8">
+                <h3 className="text-2xl font-bold mb-4 text-center text-pink-600">Assessment Complete</h3>
+                <PatientSummaryCard />
+                <h4 className="text-xl font-semibold mb-4 text-center text-purple-600">Personalized Screening Recommendations</h4>
                 <div className="space-y-6 mb-8">
                   {recommendations.map((rec, idx) => (
                     <div key={idx} className="p-6 rounded-xl border-2 border-pink-200 bg-white shadow-sm">
@@ -535,22 +596,16 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
                 </div>
                 <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-8">
                   <button
-                    onClick={handleGoToRiskProfile}
+                    onClick={() => router.push('/doctor-dashboard')}
                     className="px-6 py-3 bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold rounded-full shadow hover:shadow-lg transition-all duration-300 flex items-center gap-2"
                   >
-                    View Full Risk Profile & Download Report
-                  </button>
-                  <button
-                    onClick={() => setShowDashboard(false)}
-                    className="px-6 py-3 bg-white border-2 border-pink-300 text-pink-600 font-semibold rounded-full shadow hover:bg-pink-50 transition-all duration-300 flex items-center gap-2"
-                  >
-                    Back to Assessment
+                    Go to Dashboard
                   </button>
                 </div>
-                {showDashboard && saveStatus === 'success' && (
+                {saveStatus === 'success' && (
                   <div className="mb-6 text-green-600 text-center font-semibold">Assessment data saved successfully.</div>
                 )}
-                {showDashboard && saveStatus === 'error' && (
+                {saveStatus === 'error' && (
                   <div className="mb-6 text-red-600 text-center font-semibold">Error saving assessment data. Please try again.</div>
                 )}
               </div>
