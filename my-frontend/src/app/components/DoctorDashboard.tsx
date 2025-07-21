@@ -181,7 +181,7 @@ const DoctorDashboard = () => {
                 </table>
               )}
             </div>
-          </div>
+        </div>
         )}
       </div>
     </section>
