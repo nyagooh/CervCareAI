@@ -7,6 +7,7 @@ import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { auth } from './firebase';
 import { setLocalPatients, getLocalPatients, Patient, Assessment } from './localDatabase';
 import { useRouter } from 'next/navigation';
+import RiskProfile from './RiskProfile';
 
 interface RiskAssessmentProps {
   onShowProfile: () => void;
@@ -580,7 +581,9 @@ const RiskAssessment: React.FC<RiskAssessmentProps> = ({ onShowProfile, setClien
             ) : showSummary ? (
               <div className="mt-8">
                 <h3 className="text-2xl font-bold mb-4 text-center text-pink-600">Assessment Complete</h3>
-                <PatientSummaryCard />
+                {/* Risk Profile with Circle Visualization */}
+                <RiskProfile clientName={formData.patientName || 'Patient'} />
+                {/* Recommendations Section */}
                 <h4 className="text-xl font-semibold mb-4 text-center text-purple-600">Personalized Screening Recommendations</h4>
                 <div className="space-y-6 mb-8">
                   {recommendations.map((rec, idx) => (
