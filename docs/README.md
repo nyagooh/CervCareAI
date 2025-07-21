@@ -1,126 +1,92 @@
-# Cervical Cancer Prediction AI Tool
+# CervAi
+![Screenshot of the Cervical Cancer Risk Assessment Tool](../my-frontend/public/image.png)
 
-## Project Overview
+**Empowering Women’s Health Through Technology**
 
-An AI-powered predictive tool designed to assist healthcare professionals in early cervical cancer risk assessment. This tool uses machine learning algorithms to analyze patient data and provide risk predictions, supporting early diagnosis and intervention strategies.
+---
 
-**⚠️ Disclaimer:** This tool is for educational and research purposes only. It should not be used as a substitute for professional medical advice, diagnosis, or treatment.
+## 🌸 What is CervAi?
 
-## Architecture
+CervAi is a web platform designed to support women in taking charge of their cervical health. Our mission is to make cervical cancer awareness, screening, and support accessible, friendly, and community-driven.
 
-┌─────────────────┐ HTTP/REST API ┌──────────────────┐ Go Scripts ┌─────────────────┐
-│ │◄──────────────────►│ │◄────────────────────►│ │
-│ React Frontend │ │ Go Backend │ │ ML Model │
-│ │ │ │ │  │
-└─────────────────┘ └──────────────────┘ └─────────────────┘
-│
-▼
-┌────────────────┐
-│ Database │
-│ (SQLite/PostgreSQL) │
-└────────────────┘
+---
 
+## ✨ Key Features (Planned & In Progress)
 
-## Technology Stack
+- **Personalized User Dashboard:**  
+  Every woman gets her own dashboard to track her health journey, see past assessments, and access resources.
 
-### Frontend
-- **React.js** - User interface framework
-- **Axios** - HTTP client for API communication
-- **Material-UI/Tailwind CSS** - UI components and styling
-- **Chart.js/Recharts** - Data visualization
+- **Comprehensive Assessment Form:**  
+  Our assessment form goes beyond basic questions—it asks about your symptoms, risk factors, and health history to provide tailored recommendations.
 
-### Backend
-- **Go (Golang)** - REST API server
-- **Gin/Echo** - Web framework
-- **GORM** - ORM for database operations
-- **SQLite** (development) / **PostgreSQL** (production)
+- **Reminders & Scheduling:**  
+  Never miss a screening! Schedule reminders for your next test or checkup, and get gentle nudges when it’s time.
 
-### Machine Learning
-- **Go** - ML model development
-- **Decision Tree** - Machine learning algorithms
-- **Jupyter Notebooks** - Model development and analysis
+- **Supportive Community:**  
+  Join a safe, welcoming community of women—whether you’re living with cervical cancer, a survivor, or simply proactive about your health. Share experiences, ask questions, and support each other.
 
-## Features
+- **AI Chatbot:**  
+  Have questions or need someone to talk to? Our friendly chatbot is here 24/7 to answer your questions, provide information, or just chat.
 
-### Core Functionality
-- ✅ User-friendly data input form
-- ✅ Real-time risk assessment
-- ✅ Decision tree-based predictions
-- ✅ Risk level categorization (Low/Medium/High)
-- ✅ Contributing factors analysis
-- ✅ Medical recommendations
-- ✅ Data validation and error handling
+---
 
-### Technical Features
-- Secure data handling
-- Interactive result visualization
-- Responsive design
-- Fast API response times
-- Real-time predictions
-- Model performance metrics
+## 👩‍💻 Who is This For?
 
-## Quick Start
+- Women of all ages who want to take charge of their cervical health.
+- Anyone seeking information, support, or reminders about cervical cancer screening.
+- Community members, survivors, and supporters.
 
-### Prerequisites
+---
 
-Make sure you have the following installed:
-- **Node.js** (v16.0+)
-- **Go** (v1.19+)
-- **Git**
+## 🚀 Getting Started
 
-### 1. Clone the Repository
+> **Note:** The platform is under active development. Some features are prototypes or coming soon!
+
+### 1. Try the Frontend Locally
 
 ```bash
-git clone https://github.com/your-username/code-her-care.git
-cd code-her-care
+cd my-frontend
+npm install
+npm run dev
 ```
 
-# Backend setup(GO)
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Navigate to backend directory
-cd backend
+### 2. Explore the Features
 
-## Initialize Go module (if not already done)
-go mod init cervical-cancer-ai
+- Fill out the assessment form (with symptom questions!).
+- Set up a reminder for your next screening.
+- Join the community (coming soon).
+- Chat with our AI assistant (coming soon).
 
-## Install dependencies
-go mod tidy
+---
 
-## Run the backend server
-go run cmd/server/main.go
+## 🛣️ Roadmap
 
-The backend server will start on http://localhost:8080 
+- [x] User dashboard for women
+- [x] Assessment form with symptom questions
+- [ ] Reminders & scheduling
+- [ ] Community forum & support groups
+- [ ] AI-powered chatbot
+- [ ] Mobile-friendly design
 
-# Frontend Setup(React)
-## Navigate to frontend directory (in a new terminal)
-cd frontend
+---
 
-## Install dependencies
-npm install
+## 🤝 Contributing
 
-## Start the development server
-npm start
+We welcome contributions! Whether you’re a developer, designer, health professional, or advocate, your input is valued. Please open an issue or pull request to get started.
 
-The frontend will start on http://localhost:3000
+---
 
-## ML Model Setup (Python)
+## ❤️ Our Vision
 
-## Navigate to ML model directory (in a new terminal)
-cd ml_model
+We believe every woman deserves access to information, support, and tools to protect her health. CervAi is built by women, for women—join us on this journey!
 
-## Create virtual environment
-python -m venv venv
+---
 
-## Activate virtual environment
+## 📸 Sneak Peek
 
-### On macOS/Linux:
-source venv/bin/activate
+![App Screenshot](./public/image.png)  
+*Your health, your community, your care.*
 
-## Install dependencies
-pip install -r requirements.txt
-
-## Train the model (optional - pre-trained model included)
-python src/train_model.py
-
-
-# Project Structure
+---

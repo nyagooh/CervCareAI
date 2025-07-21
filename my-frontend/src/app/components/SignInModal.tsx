@@ -2,9 +2,23 @@
 
 import React, { useState } from 'react';
 import { X, LogIn, Shield, Heart, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from './firebase';
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from './firebase';
 import { useUser } from '../UserContext';
+import { useRouter } from 'next/navigation';
+
+async function addDoctorToFirestore(user: any) {
+  if (!user) return;
+  const { uid, displayName, email, photoURL } = user;
+  const doctorRef = (await import('firebase/firestore')).doc(db, 'doctors', uid);
+  const setDoc = (await import('firebase/firestore')).setDoc;
+  await setDoc(doctorRef, {
+    name: displayName || '',
+    email: email,
+    photoURL: photoURL || '',
+    createdAt: new Date()
+  }, { merge: true });
+}
 
 const SignIn = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -13,17 +27,20 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
-  // const { user, role, setRole } = useUser();
+  const [signInError, setSignInError] = useState('');
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const router = useRouter();
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    setSignInError('');
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      // User info is now in context via onAuthStateChanged
-      // if (!role) setShowRoleModal(true);
+      const result = await signInWithPopup(auth, provider);
+      await addDoctorToFirestore(result.user);
+      router.push('/doctor-dashboard');
     } catch (error) {
+      setSignInError('Google sign-in failed. Please try again.');
       console.error('Google sign-in error:', error);
     } finally {
       setIsLoading(false);
@@ -33,10 +50,13 @@ const SignIn = () => {
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setSignInError('');
     try {
-      // TODO: Implement Firebase email sign-in
-      console.log('Email sign-in:', { email, password, isSignUp });
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      await addDoctorToFirestore(result.user);
+      router.push('/doctor-dashboard');
     } catch (error) {
+      setSignInError('Email sign-in failed. Please check your credentials.');
       console.error('Email sign-in error:', error);
     } finally {
       setIsLoading(false);
@@ -137,6 +157,10 @@ const SignIn = () => {
               </div>
             </div>
 
+            {signInError && (
+              <p className="text-red-500 text-xs mt-1 text-center">{signInError}</p>
+            )}
+
             <button
               type="submit"
               disabled={isLoading}
@@ -169,28 +193,6 @@ const SignIn = () => {
           </div>
         </div>
       </div>
-      {/* Role Selection Modal */}
-      {showRoleModal && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl shadow-xl max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-4 text-center">Select your role</h3>
-            <div className="flex gap-4 justify-center">
-              <button
-                className="px-6 py-2 bg-pink-400 text-white rounded-xl font-semibold hover:bg-pink-500"
-                onClick={() => { setRole('patient'); setShowRoleModal(false); }}
-              >
-                Patient
-              </button>
-              <button
-                className="px-6 py-2 bg-purple-500 text-white rounded-xl font-semibold hover:bg-purple-600"
-                onClick={() => { setRole('doctor'); setShowRoleModal(false); }}
-              >
-                Doctor
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
