@@ -1,0 +1,45 @@
+# Core ML/DL Frameworks (Python 3.11 compatible with GPU)
+torch==2.0.1
+torchvision==0.15.2
+scikit-learn==1.3.2
+xgboost==2.0.3
+pandas==2.1.4
+numpy==1.24.3
+
+# Image Processing
+Pillow==10.1.0
+opencv-python==4.8.1.78
+albumentations==1.3.1
+
+# API Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.2
+pydantic-settings==2.1.0
+
+# MLflow for Experiment Tracking
+mlflow==2.9.2
+protobuf==4.25.1
+
+# Optuna for Hyperparameter Optimization
+optuna==3.5.0
+optuna-integration==3.5.0
+
+# Database (for MLflow backend)
+sqlalchemy==2.0.23
+alembic==1.13.0
+
+# Utilities
+tqdm==4.66.1
+matplotlib==3.8.2
+seaborn==0.13.0
+plotly==5.18.0
+python-dotenv==1.0.0
+
+# Model Serialization
+onnx==1.15.0
+onnxruntime==1.16.3
+
+# Data Validation
+openpyxl==3.1.2

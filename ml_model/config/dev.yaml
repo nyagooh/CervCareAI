@@ -1,0 +1,237 @@
+# CervCareAI Development Configuration
+# Used for local development and testing
+
+# ============================================================================
+# MLflow Configuration
+# ============================================================================
+mlflow:
+  tracking_uri: "file:///./mlruns"
+  experiment_risk: "risk-prediction-dev"
+  experiment_image: "image-classification-dev"
+  model_registry:
+    risk_model_name: "cervical-risk-predictor-dev"
+    image_model_name: "cervical-image-classifier-dev"
+
+# ============================================================================
+# Data Configuration
+# ============================================================================
+data:
+  base_dir: "cervcareai_data"
+  raw_dir: "cervcareai_data/raw"
+  processed_dir: "cervcareai_data/processed"
+  
+  # Dataset paths
+  kaggle_risk: "cervcareai_data/raw/kaggle_risk/cervical-cancer_csv.csv"
+  sipakmed: "cervcareai_data/raw/sipakmed"
+  mendeley_lbc: "cervcareai_data/raw/mendeley_lbc"
+  dryad_kenya: "cervcareai_data/raw/dryad_kenya/Data.xlsx"
+  
+  # Split ratios (same as prod for consistency)
+  split_ratios:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+  
+  random_seed: 42
+
+# ============================================================================
+# Risk Prediction Model Configuration
+# ============================================================================
+risk_model:
+  model_type: "xgboost"
+  target_column: "Biopsy"
+  
+  # Simplified hyperparameters for faster training in dev
+  hyperparameters:
+    max_depth: 6
+    learning_rate: 0.1
+    n_estimators: 50  # Reduced for faster training
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+    eval_metric: "logloss"
+  
+  # Minimal hyperparameter tuning for dev
+  tuning:
+    enabled: false  # Disable for faster dev cycles
+    cv_folds: 3  # Reduced from 5
+    scoring: "f1"
+    param_grid:
+      max_depth: [6]  # Single value for dev
+      learning_rate: [0.1]
+      n_estimators: [50]
+  
+  # Performance thresholds
+  performance:
+    target_accuracy: 0.90  # Slightly lower for dev
+    min_recall: 0.85
+    max_false_negative_rate: 0.10
+
+# ============================================================================
+# Image Classification Model Configuration
+# ============================================================================
+image_model:
+  model_type: "resnet50"
+  input_size: [224, 224]
+  num_classes: 5
+  
+  classes:
+    - "Dyskeratotic"
+    - "Koilocytotic"
+    - "Metaplastic"
+    - "Parabasal"
+    - "Superficial-Intermediate"
+  
+  bethesda_mapping:
+    Dyskeratotic: "ASC-US/LSIL"
+    Koilocytotic: "LSIL"
+    Metaplastic: "Benign"
+    Parabasal: "Normal"
+    Superficial-Intermediate: "Normal"
+  
+  # Reduced training for dev
+  training:
+    batch_size: 16  # Smaller for dev
+    epochs_phase1: 5  # Reduced from 10
+    epochs_phase2: 10  # Reduced from 30
+    learning_rate_phase1: 0.001
+    learning_rate_phase2: 0.0001
+    optimizer: "adam"
+    loss: "categorical_crossentropy"
+    
+    # Light augmentation for dev
+    augmentation:
+      enabled: true
+      rotation_range: 15
+      width_shift_range: 0.1
+      height_shift_range: 0.1
+      horizontal_flip: true
+      vertical_flip: false
+      zoom_range: 0.1
+  
+  transfer_learning:
+    enabled: true
+    pretrained_weights: "imagenet"
+    freeze_layers: true
+    unfreeze_percentage: 0.2
+  
+  performance:
+    target_accuracy: 0.90
+    min_confidence_threshold: 0.6
+
+# ============================================================================
+# API Configuration
+# ============================================================================
+api:
+  host: "127.0.0.1"  # Localhost only for dev
+  port: 8000
+  reload: true  # Auto-reload enabled for dev
+  log_level: "debug"  # More verbose logging
+  
+  # CORS settings (permissive for dev)
+  cors:
+    allowed_origins:
+      - "http://localhost:3000"
+      - "http://127.0.0.1:3000"
+      - "http://localhost:3001"  # Alternative port
+    allow_credentials: true
+    allow_methods: ["*"]
+    allow_headers: ["*"]
+  
+  upload:
+    max_file_size_mb: 10  # Larger limit for dev testing
+    allowed_image_types:
+      - "image/jpeg"
+      - "image/png"
+      - "image/bmp"
+  
+  rate_limit:
+    enabled: false  # No rate limiting in dev
+
+# ============================================================================
+# Model Paths
+# ============================================================================
+models:
+  save_dir: "models"
+  risk_model_path: "models/risk_model_dev.pkl"
+  risk_preprocessor_path: "models/risk_preprocessor_dev.pkl"
+  image_model_path: "models/image_classifier_dev.pth"
+  image_checkpoint_dir: "models/checkpoints_dev"
+
+# ============================================================================
+# Logging Configuration
+# ============================================================================
+logging:
+  log_dir: "logs"
+  log_level: "DEBUG"  # Verbose for dev
+  
+  training_log: "logs/training_dev.log"
+  api_log: "logs/api_dev.log"
+  inference_log: "logs/inference_dev.log"
+  
+  max_bytes: 5242880  # 5MB (smaller for dev)
+  backup_count: 2
+
+# ============================================================================
+# Monitoring & Alerts
+# ============================================================================
+monitoring:
+  enabled: true  # Enable for testing
+  
+  metrics:
+    log_inference_time: true
+    log_prediction_confidence: true
+    alert_on_low_confidence: false
+  
+  drift_detection:
+    enabled: false
+
+# ============================================================================
+# Deployment Configuration
+# ============================================================================
+deployment:
+  environment: "development"
+  
+  docker:
+    image_name: "cervcareai-ml-backend-dev"
+    image_tag: "dev"
+  
+  resources:
+    cpu_limit: "1"
+    memory_limit: "2G"
+  
+  health_check:
+    enabled: true
+    interval_seconds: 60
+    timeout_seconds: 5
+
+# ============================================================================
+# Development Tools
+# ============================================================================
+dev:
+  # Enable debug features
+  debug_mode: true
+  
+  # Sample data for quick testing
+  use_sample_data: false
+  sample_size: 100  # Use 100 samples for quick tests
+  
+  # Profiling
+  profile_training: false
+  profile_inference: false
+  
+  # Verbose output
+  verbose: true
+
+# ============================================================================
+# Kenya-Specific Settings (same as prod)
+# ============================================================================
+kenya:
+  offline_mode: true
+  hiv_cofactor:
+    enabled: true
+    risk_multiplier: 6.0
+  screening_intervals:
+    low_risk_years: 3
+    medium_risk_years: 1.5
+    high_risk_months: 6

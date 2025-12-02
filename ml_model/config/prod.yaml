@@ -1,0 +1,268 @@
+# CervCareAI Production Configuration
+# Used for production deployment and model training
+
+# ============================================================================
+# MLflow Configuration
+# ============================================================================
+mlflow:
+  tracking_uri: "file:///./mlruns"  # Local file storage, change to server URL for production
+  experiment_risk: "risk-prediction"
+  experiment_image: "image-classification"
+  model_registry:
+    risk_model_name: "cervical-risk-predictor"
+    image_model_name: "cervical-image-classifier"
+
+# ============================================================================
+# Data Configuration
+# ============================================================================
+data:
+  base_dir: "cervcareai_data"
+  raw_dir: "cervcareai_data/raw"
+  processed_dir: "cervcareai_data/processed"
+  
+  # Dataset paths
+  kaggle_risk: "cervcareai_data/raw/kaggle_risk/cervical-cancer_csv.csv"
+  sipakmed: "cervcareai_data/raw/sipakmed"
+  mendeley_lbc: "cervcareai_data/raw/mendeley_lbc"
+  dryad_kenya: "cervcareai_data/raw/dryad_kenya/Data.xlsx"
+  
+  # Train/val/test split ratios
+  split_ratios:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+  
+  random_seed: 42
+
+# ============================================================================
+# Risk Prediction Model Configuration
+# ============================================================================
+risk_model:
+  model_type: "xgboost"
+  target_column: "Biopsy"
+  
+  # XGBoost hyperparameters
+  hyperparameters:
+    max_depth: 6
+    learning_rate: 0.1
+    n_estimators: 100
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+    eval_metric: "logloss"
+  
+  # Hyperparameter tuning (GridSearch)
+  tuning:
+    enabled: true
+    cv_folds: 5
+    scoring: "f1"
+    param_grid:
+      max_depth: [3, 6, 9]
+      learning_rate: [0.01, 0.1, 0.3]
+      n_estimators: [50, 100, 200]
+      subsample: [0.8, 1.0]
+      colsample_bytree: [0.8, 1.0]
+  
+  # Performance thresholds
+  performance:
+    target_accuracy: 0.95
+    min_recall: 0.90  # Important for cancer detection
+    max_false_negative_rate: 0.05
+
+# ============================================================================
+# Image Classification Model Configuration
+# ============================================================================
+image_model:
+  model_type: "resnet50"  # Options: resnet50, efficientnet_b3
+  input_size: [224, 224]
+  num_classes: 2  # Binary: Normal vs Abnormal
+  
+  # Combined dataset (SIPaKMeD + Mendeley LBC)
+  use_combined_dataset: true
+  datasets:
+    sipakmed: true
+    mendeley_lbc: true
+  
+  # Class mapping (binary classification)
+  classes:
+    - "Normal"
+    - "Abnormal"
+  
+  # Training configuration
+  training:
+    batch_size: 32
+    epochs: 50
+    optimizer: "adamw"
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    dropout: 0.3
+    
+    # Data augmentation (heavy for 3x effective dataset size)
+    augmentation:
+      enabled: true
+      augment_factor: 3  # 3x dataset size through augmentation
+      rotation_range: 30
+      shift_range: 0.1
+      zoom_range: 0.2
+      brightness_range: [0.7, 1.3]
+      horizontal_flip: true
+      vertical_flip: false
+      clahe: true  # Contrast Limited Adaptive Histogram Equalization
+      gaussian_noise: 0.3
+      optical_distortion: 0.3
+  
+  # Transfer learning
+  transfer_learning:
+    enabled: true
+    pretrained_weights: "imagenet"
+    freeze_layers: true
+    unfreeze_percentage: 0.2
+  
+  # Hyperparameter tuning
+  tuning:
+    method: "optuna"  # Options: "optuna", "grid", "none"
+    
+    # Optuna settings
+    optuna:
+      n_trials: 50
+      timeout_hours: 12
+      pruning_enabled: true
+      pruner: "median"  # Options: median, hyperband, percentile
+      n_startup_trials: 5
+      n_warmup_steps: 3
+      
+      # Hyperparameter search space
+      search_space:
+        learning_rate: [1e-5, 1e-2]  # log scale
+        batch_size: [16, 32, 64]
+        optimizer: ["adam", "adamw", "sgd"]
+        weight_decay: [1e-6, 1e-3]  # log scale
+        dropout: [0.1, 0.5]
+        augment_factor: [2, 3, 4]
+        model_type: ["resnet50", "efficientnet_b3"]
+  
+  # Performance thresholds
+  performance:
+    target_accuracy: 0.95
+    min_confidence_threshold: 0.7
+    min_recall: 0.90  # Important for cancer detection
+
+# ============================================================================
+# API Configuration
+# ============================================================================
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false  # Set to true only in development
+  log_level: "info"
+  
+  # CORS settings
+  cors:
+    allowed_origins:
+      - "http://localhost:3000"
+      - "http://127.0.0.1:3000"
+      # Add production frontend URLs here
+    allow_credentials: true
+    allow_methods: ["*"]
+    allow_headers: ["*"]
+  
+  # File upload limits
+  upload:
+    max_file_size_mb: 5
+    allowed_image_types:
+      - "image/jpeg"
+      - "image/png"
+      - "image/bmp"
+  
+  # Rate limiting (optional, implement if needed)
+  rate_limit:
+    enabled: false
+    requests_per_minute: 60
+
+# ============================================================================
+# Model Paths
+# ============================================================================
+models:
+  save_dir: "models"
+  
+  # Risk prediction
+  risk_model_path: "models/risk_model.pkl"
+  risk_preprocessor_path: "models/risk_preprocessor.pkl"
+  
+  # Image classification
+  image_model_path: "models/image_classifier.pth"
+  image_checkpoint_dir: "models/checkpoints"
+
+# ============================================================================
+# Logging Configuration
+# ============================================================================
+logging:
+  log_dir: "logs"
+  log_level: "INFO"
+  
+  # Log files
+  training_log: "logs/training.log"
+  api_log: "logs/api.log"
+  inference_log: "logs/inference.log"
+  
+  # Log rotation
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
+
+# ============================================================================
+# Monitoring & Alerts (for production)
+# ============================================================================
+monitoring:
+  enabled: false
+  
+  # Performance monitoring
+  metrics:
+    log_inference_time: true
+    log_prediction_confidence: true
+    alert_on_low_confidence: false
+    confidence_threshold: 0.5
+  
+  # Model drift detection
+  drift_detection:
+    enabled: false
+    check_interval_hours: 24
+
+# ============================================================================
+# Deployment Configuration
+# ============================================================================
+deployment:
+  environment: "production"  # Options: development, staging, production
+  
+  # Docker settings
+  docker:
+    image_name: "cervcareai-ml-backend"
+    image_tag: "latest"
+  
+  # Resource limits
+  resources:
+    cpu_limit: "2"
+    memory_limit: "4G"
+  
+  # Health check
+  health_check:
+    enabled: true
+    interval_seconds: 30
+    timeout_seconds: 10
+
+# ============================================================================
+# Kenya-Specific Settings
+# ============================================================================
+kenya:
+  # Local deployment considerations
+  offline_mode: true  # Enable for offline-first deployment
+  
+  # HIV co-infection awareness (30-40% prevalence in Western Kenya)
+  hiv_cofactor:
+    enabled: true
+    risk_multiplier: 6.0  # 6x higher risk with HIV
+  
+  # Screening interval recommendations (Kenya MOH guidelines)
+  screening_intervals:
+    low_risk_years: 3
+    medium_risk_years: 1.5
+    high_risk_months: 6

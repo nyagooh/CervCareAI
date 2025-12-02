@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # ML Backend (FastAPI)
+  ml-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cervcareai-ml-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models
+      - ./mlruns:/app/mlruns
+      - ./logs:/app/logs
+    environment:
+      - MLFLOW_TRACKING_URI=file:///app/mlruns
+    networks:
+      - cervcareai-network
+    restart: unless-stopped
+
+  # MLflow Server (for experiment tracking UI)
+  mlflow-server:
+    image: python:3.10-slim
+    container_name: cervcareai-mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlruns
+    working_dir: /mlruns
+    command: >
+      sh -c "pip install mlflow && 
+             mlflow ui --host 0.0.0.0 --port 5000 --backend-store-uri file:///mlruns"
+    networks:
+      - cervcareai-network
+    restart: unless-stopped
+
+  # Frontend (Next.js) - Link to existing frontend
+  frontend:
+    build:
+      context: ../my-frontend
+      dockerfile: Dockerfile
+    container_name: cervcareai-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://ml-backend:8000
+    depends_on:
+      - ml-backend
+    networks:
+      - cervcareai-network
+    restart: unless-stopped
+
+networks:
+  cervcareai-network:
+    driver: bridge
+
+volumes:
+  mlruns:
+  models:
+  logs:
