@@ -1,0 +1,367 @@
+# ===================================
+# PYTHON CORE (GitHub Official Template)
+# ===================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+Untitled*.ipynb
+
+# IPython
+profile_default/
+ipython_config.py
+
+# PDM
+.pdm-python
+.pdm-build/
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# Redis
+*.rdb
+*.aof
+*.pid
+
+# RabbitMQ
+mnesia/
+rabbitmq/
+rabbitmq-data/
+
+# ActiveMQ
+activemq-data/
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Ruff
+.ruff_cache/
+
+# PyPI configuration
+.pypirc
+
+# ===================================
+# MACHINE LEARNING / DATA SCIENCE
+# ===================================
+
+# Data directories - preserve structure but ignore content
+# Use .gitkeep files to maintain empty directories
+# NOTE: This includes all training/validation images (medical data)
+cervcareai_data/raw/**/*
+!cervcareai_data/raw/.gitkeep
+cervcareai_data/processed/**/*
+!cervcareai_data/processed/.gitkeep
+cervcareai_data/preprocessed/**/*
+!cervcareai_data/preprocessed/.gitkeep
+cervcareai_data/features/**/*
+!cervcareai_data/features/.gitkeep
+cervcareai_data/predictions/**/*
+!cervcareai_data/predictions/.gitkeep
+cervcareai_data/metadata/**/*
+!cervcareai_data/metadata/.gitkeep
+
+# Alternative data patterns
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.db
+*.sqlite
+*.sqlite3
+
+# Model artifacts and checkpoints
+models/*.pkl
+models/*.pickle
+models/*.joblib
+models/*.h5
+models/*.hdf5
+models/*.pt
+models/*.pth
+models/*.ckpt
+models/*.pb
+models/*.onnx
+models/*.keras
+models/*.model
+models/*.weights
+models/*.bin
+models/*.safetensors
+!models/.gitkeep
+!models/README.md
+
+# PyTorch specific
+*.pth.tar
+checkpoint/
+checkpoints/
+*.tar.gz
+
+# TensorFlow specific
+saved_model/
+*.tfrecord
+*.tflite
+events.out.tfevents.*
+
+# MLflow experiment tracking
+mlruns/
+mlartifacts/
+mlflow.db
+mlflow-tracking/
+
+# Optuna hyperparameter optimization
+optuna.db
+*.db-journal
+optuna_storage/
+
+# Weights & Biases
+wandb/
+
+# TensorBoard logs
+runs/
+tensorboard/
+tb_logs/
+
+# DVC (Data Version Control)
+.dvc
+*.dvc
+.dvc/tmp/
+
+# Experiment outputs (includes generated plots, confusion matrices, visualizations)
+logs/
+outputs/
+experiments/
+results/
+
+# ===================================
+# IDE / EDITORS
+# ===================================
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ===================================
+# OPERATING SYSTEM
+# ===================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ===================================
+# SECURITY & CREDENTIALS
+# ===================================
+
+# API keys and secrets
+kaggle/kaggle.json
+*.pem
+*.key
+*.crt
+*.p12
+.env
+.env.*
+!.env.example
+secrets/
+credentials/
+.secrets/
+api_keys.txt
+
+# AWS
+.aws/
+
+# ===================================
+# DOCKER & CONTAINERIZATION
+# ===================================
+
+# Docker override files
+docker-compose.override.yml
+.dockerignore
+
+# ===================================
+# TEMPORARY & BACKUP FILES
+# ===================================
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+tmp/
+temp/
+__tmp__/
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# ===================================
+# PROJECT SPECIFIC
+# ===================================
+
+# FastAPI specific
+.fastapi_cache/
+__pycache__/
+
+# ===================================
+# IMPORTANT: What IS tracked in Git
+# ===================================
+# - Documentation images in reference/ directory
+# - README assets and diagrams
+# - Small reference/example images
+# - UI mockups and design assets
+# All training data images and generated plots are excluded above
